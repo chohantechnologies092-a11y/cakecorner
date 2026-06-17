@@ -156,7 +156,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Base Size (e.g. 1 Pound)</label>
-          <input type="text" name="baseSize" defaultValue={initialData?.baseSize} placeholder="Leave empty if none"
+          <input type="text" name="baseSize" defaultValue={initialData?.baseSize || ""} placeholder="Leave empty if none"
             style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
         </div>
       </div>
