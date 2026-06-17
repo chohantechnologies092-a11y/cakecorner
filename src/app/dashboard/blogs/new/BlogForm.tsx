@@ -101,6 +101,7 @@ export default function BlogForm() {
         <label style={{ fontWeight: 'bold' }}>Content (Rich Text)</label>
         <div style={{ background: 'white' }}>
           <ReactQuill 
+            // @ts-ignore
             ref={quillRef}
             theme="snow" 
             value={content} 
