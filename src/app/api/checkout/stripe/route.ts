@@ -54,6 +54,7 @@ export async function POST(req: Request) {
           currency: "gbp",
           product_data: {
             name: "Delivery Fee",
+            description: "Standard Delivery",
           },
           unit_amount: Math.round(deliveryFee * 100),
         },
