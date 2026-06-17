@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Category ────────────────────────────────────────────────────────────────
+
+model Category {
+  id               String    @id @default(cuid())
+  name             String
+  slug             String    @unique
+  description      String?
+  imageUrl         String?
+  isVisible        Boolean   @default(true)
+  isFeaturedOnHome Boolean   @default(false)
+  showAsProductRow Boolean   @default(false)
+  productRowOrder  Int       @default(0)
+  showInMegaMenu   Boolean   @default(false)
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  products         Product[]
+}
+
+// ─── Product ─────────────────────────────────────────────────────────────────
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  imageUrl    String?
+  isFeatured  Boolean         @default(false)
+  isVisible   Boolean         @default(true)
+  isPhotoCake Boolean         @default(false)
+  sortOrder   Int             @default(0)
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  baseSize    String?
+  isPickupAvailable Boolean   @default(true)
+  
+  // SEO & AEO Fields
+  metaTitle       String?
+  metaDescription String?
+  canonicalUrl    String?
+
+  sizes           ProductSize[]
+  flavors         ProductFlavor[]
+  images          ProductImage[]
+  orderItems      OrderItem[]
+}
+
+model ProductSize {
+  id            String  @id @default(cuid())
+  name          String
+  priceModifier Float   @default(0)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductFlavor {
+  id        String  @id @default(cuid())
+  name      String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  altText   String?
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── Order ───────────────────────────────────────────────────────────────────
+
+model Order {
+  id        String      @id @default(cuid())
+  customer  String
+  email     String
+  phone     String?
+  address   String?
+  notes     String?
+  total     Float
+  status          String      @default("Pending") // Pending | Processing | Completed | Cancelled
+  paymentMethod   String      @default("Cash")    // Cash | Card
+  paymentStatus   String      @default("Pending") // Pending | Paid | Failed
+  stripeSessionId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  price     Float
+  size      String?
+  flavor    String?
+  photoUrl  String?
+  orderId   String
+  productId String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+// ─── Nav Menu ────────────────────────────────────────────────────────────────
+
+model NavMenuItem {
+  id         String   @id @default(cuid())
+  label      String
+  url        String
+  sortOrder  Int      @default(0)
+  isVisible  Boolean  @default(true)
+  openNewTab Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── Users & Roles ───────────────────────────────────────────────────────────
+
+model User {
+  id        String     @id @default(cuid())
+  name      String
+  email     String     @unique
+  password  String // Hashed password
+  role      String     @default("EMPLOYEE") // SUPER_ADMIN, ADMIN, EMPLOYEE
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  posts     BlogPost[] // Relation to Blog Posts
+}
+
+// ─── Blog System (SEO/AEO Optimized) ─────────────────────────────────────────
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  posts       BlogPost[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model BlogPost {
+  id         String  @id @default(cuid())
+  title      String
+  slug       String  @unique
+  content    String // Rich Text HTML
+  excerpt    String?
+  coverImage String?
+
+  // SEO & AEO Fields
+  metaTitle       String?
+  metaDescription String?
+  canonicalUrl    String?
+  isPublished     Boolean   @default(false)
+  publishedAt     DateTime?
+
+  authorId   String
+  author     User          @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   BlogCategory? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Store Settings ───────────────────────────────────────────────────────────
+
+model StoreSetting {
+  id             String   @id @default("global")
+  pickupLocation String   @default("145 Ladypool Road, Birmingham")
+  updatedAt      DateTime @updatedAt
+}

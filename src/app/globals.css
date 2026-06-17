@@ -1,0 +1,183 @@
+/* src/app/globals.css */
+:root {
+  --color-primary: #009193; /* Deep Teal */
+  --color-primary-dark: #007678; /* Darker Teal for hover states */
+  --color-primary-light: #18a9ab;
+  --color-secondary: #d9a05b; /* Caramel Gold */
+  --color-text-main: #3e2723; /* Chocolate Brown */
+  --color-text-light: #795548; /* Warm Brown */
+  --color-background: #fffcf9; /* Creamy White */
+  --color-background-alt: #fdf5e6; /* Old Lace */
+  
+  --font-heading: 'Playfair Display', serif;
+  --font-script: 'Pacifico', cursive;
+  --font-body: 'Outfit', sans-serif;
+  
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-full: 9999px;
+  
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-main);
+  background-color: var(--color-background);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.script-text {
+  font-family: var(--font-script);
+  font-weight: normal;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: transparent;
+  color: var(--color-background);
+  border: 2px solid var(--color-background);
+  padding: 0.75rem 2rem;
+  border-radius: var(--border-radius-full);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 2rem;
+}
+
+/* Decorative utilities */
+.wave-divider {
+  position: absolute;
+  width: 100%;
+  line-height: 0;
+  direction: ltr;
+  left: 0;
+  z-index: 10;
+}
+.wave-divider svg {
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 25px;
+}
+.wave-divider.top {
+  top: -1px;
+}
+.wave-divider.bottom {
+  bottom: -1px;
+  transform: rotate(180deg);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Responsive Utilities */
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.responsive-checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .responsive-checkout-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* React Quill Global List Fixes */
+.ql-editor ul {
+  padding-left: 2rem !important;
+  list-style-type: disc !important;
+  margin-bottom: 1rem !important;
+}
+
+.ql-editor ol {
+  padding-left: 2rem !important;
+  list-style-type: decimal !important;
+  margin-bottom: 1rem !important;
+}
+
+.ql-editor li {
+  display: list-item !important;
+  list-style-position: outside !important;
+  margin-bottom: 0.5rem !important;
+}
