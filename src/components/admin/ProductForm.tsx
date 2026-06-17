@@ -188,6 +188,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Description *</label>
         <div style={{ background: 'white' }}>
           <ReactQuill 
+            // @ts-ignore
             ref={quillRef}
             theme="snow" 
             value={description} 
