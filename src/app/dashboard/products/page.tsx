@@ -1,16 +1,27 @@
 import { prisma } from "@/lib/db";
 import { deleteProduct } from "@/lib/actions";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "../page.module.css";
+import CsvImportModal from "@/components/admin/CsvImportModal";
 
-export default async function ProductsPage() {
-  const [products, categories] = await Promise.all([
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageStr } = await searchParams;
+  const currentPage = pageStr ? parseInt(pageStr, 10) : 1;
+  const pageSize = 20;
+
+  const [products, totalProducts, categories] = await Promise.all([
     prisma.product.findMany({
       orderBy: { createdAt: "desc" },
       include: { category: true },
+      skip: (currentPage - 1) * pageSize,
+      take: pageSize,
     }),
+    prisma.product.count(),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
+
+  const totalPages = Math.ceil(totalProducts / pageSize);
 
   return (
     <div>
@@ -19,9 +30,12 @@ export default async function ProductsPage() {
           <h1 className={styles.title}>Products</h1>
           <p style={{ color: "#888", fontSize: "0.9rem", marginTop: "0.25rem" }}>{products.length} products</p>
         </div>
-        <Link href="/dashboard/products/new" style={{ padding: "0.6rem 1.4rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none", fontWeight: "500", fontSize: "0.9rem" }}>
-          + Add Product
-        </Link>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <CsvImportModal />
+          <Link href="/dashboard/products/new" style={{ padding: "0.6rem 1.4rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none", fontWeight: "500", fontSize: "0.9rem" }}>
+            + Add Product
+          </Link>
+        </div>
       </header>
 
       {categories.length === 0 && (
@@ -60,7 +74,9 @@ export default async function ProductsPage() {
                   <td style={{ padding: "1rem 1.5rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                       {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} style={{ width: "48px", height: "48px", objectFit: "cover", borderRadius: "8px" }} />
+                        <div style={{ position: "relative", width: "48px", height: "48px", borderRadius: "8px", overflow: "hidden" }}>
+                          <Image src={product.imageUrl} alt={product.name} fill sizes="48px" style={{ objectFit: "cover" }} />
+                        </div>
                       ) : (
                         <div style={{ width: "48px", height: "48px", background: "#f0faf9", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem" }}>🎂</div>
                       )}
@@ -96,6 +112,26 @@ export default async function ProductsPage() {
               ))}
             </tbody>
           </table>
+        )}
+
+        {totalPages > 1 && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.5rem", borderTop: "1px solid #eee", background: "#fafafa" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666" }}>
+              Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalProducts)} of {totalProducts} products
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              {currentPage > 1 && (
+                <Link href={`/dashboard/products?page=${currentPage - 1}`} style={{ padding: "0.4rem 0.8rem", border: "1px solid #ddd", borderRadius: "6px", textDecoration: "none", color: "#333", fontSize: "0.85rem", background: "#fff" }}>
+                  Previous
+                </Link>
+              )}
+              {currentPage < totalPages && (
+                <Link href={`/dashboard/products?page=${currentPage + 1}`} style={{ padding: "0.4rem 0.8rem", border: "1px solid #ddd", borderRadius: "6px", textDecoration: "none", color: "#333", fontSize: "0.85rem", background: "#fff" }}>
+                  Next
+                </Link>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>

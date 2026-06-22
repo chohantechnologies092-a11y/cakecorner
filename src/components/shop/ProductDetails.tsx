@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
 import styles from "./ProductDetails.module.css";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -81,7 +82,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
       <div className={styles.gallery}>
         <div className={styles.mainImageWrapper}>
           {activeImage ? (
-            <img src={activeImage} alt={product.name} className={styles.mainImage} />
+            <Image src={activeImage} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" className={styles.mainImage} style={{ objectFit: "cover" }} />
           ) : (
             <div className={styles.placeholder}>🎂</div>
           )}
@@ -90,8 +91,8 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         {allImages.length > 1 && (
           <div className={styles.thumbnails}>
             {allImages.map((img: string, idx: number) => (
-              <button key={idx} onClick={() => setActiveImage(img)} className={`${styles.thumbnailBtn} ${activeImage === img ? styles.active : ''}`}>
-                <img src={img} alt="Thumbnail" className={styles.thumbnailImg} />
+              <button key={idx} onClick={() => setActiveImage(img)} className={`${styles.thumbnailBtn} ${activeImage === img ? styles.active : ''}`} style={{ position: "relative" }}>
+                <Image src={img} alt="Thumbnail" fill sizes="100px" className={styles.thumbnailImg} style={{ objectFit: "cover" }} />
               </button>
             ))}
           </div>

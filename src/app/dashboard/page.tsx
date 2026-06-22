@@ -3,10 +3,17 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 export default async function DashboardOverview() {
-  const [productsCount, categoriesCount, orders, recentOrders] = await Promise.all([
+  const [productsCount, categoriesCount, totalRevenueResult, statusCountsResult, recentOrders] = await Promise.all([
     prisma.product.count(),
     prisma.category.count(),
-    prisma.order.findMany({ include: { items: true } }),
+    prisma.order.aggregate({
+      _sum: { total: true },
+      where: { status: "Completed" },
+    }),
+    prisma.order.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    }),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -14,11 +21,23 @@ export default async function DashboardOverview() {
     }),
   ]);
 
-  const totalRevenue = orders
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.total, 0);
-  const pendingOrders = orders.filter((o) => o.status === "Pending").length;
-  const completedOrders = orders.filter((o) => o.status === "Completed").length;
+  const totalRevenue = totalRevenueResult._sum.total || 0;
+
+  const statusCounts: Record<string, number> = {
+    Pending: 0,
+    Processing: 0,
+    Completed: 0,
+    Cancelled: 0,
+  };
+
+  let totalOrdersCount = 0;
+  statusCountsResult.forEach((item) => {
+    statusCounts[item.status] = item._count.status;
+    totalOrdersCount += item._count.status;
+  });
+
+  const pendingOrders = statusCounts["Pending"] || 0;
+  const completedOrders = statusCounts["Completed"] || 0;
 
   const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
     Pending:    { bg: "#fff8e1", color: "#f57f17" },
@@ -40,7 +59,7 @@ export default async function DashboardOverview() {
       <div className={styles.grid} style={{ marginBottom: "2.5rem" }}>
         {[
           { label: "Total Revenue", value: `£${totalRevenue.toFixed(2)}`, emoji: "💰", color: "#10b981", bg: "#d1fae5" },
-          { label: "Total Orders", value: orders.length, emoji: "📦", color: "#3b82f6", bg: "#dbeafe" },
+          { label: "Total Orders", value: totalOrdersCount, emoji: "📦", color: "#3b82f6", bg: "#dbeafe" },
           { label: "Products", value: productsCount, emoji: "🎂", color: "#8b5cf6", bg: "#ede9fe" },
           { label: "Categories", value: categoriesCount, emoji: "🏷️", color: "#f59e0b", bg: "#fef3c7" },
         ].map((stat) => (
@@ -101,8 +120,8 @@ export default async function DashboardOverview() {
           <h2 className={styles.panelTitle} style={{ marginBottom: "1.5rem" }}>Order Status</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             {["Pending", "Processing", "Completed", "Cancelled"].map((status) => {
-              const count = orders.filter((o) => o.status === status).length;
-              const pct = orders.length ? Math.round((count / orders.length) * 100) : 0;
+              const count = statusCounts[status] || 0;
+              const pct = totalOrdersCount ? Math.round((count / totalOrdersCount) * 100) : 0;
               const c = STATUS_COLORS[status];
               return (
                 <div key={status}>

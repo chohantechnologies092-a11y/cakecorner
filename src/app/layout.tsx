@@ -58,8 +58,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} ${playfair.variable} ${pacifico.variable}`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${outfit.variable} ${playfair.variable} ${pacifico.variable}`} suppressHydrationWarning>
         <CartProvider>
           <LayoutContent header={<HeaderWrapper />} footer={<Footer />}>
             {children}

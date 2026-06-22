@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import AutoSlider from "@/components/ui/AutoSlider";
 import styles from "./CategoryProductRow.module.css";
@@ -41,7 +42,7 @@ export default async function CategoryProductRow({ title, categorySlug, isAltern
             <Link key={product.id} href={`/product/${product.id}`} className={styles.productCard}>
               <div className={styles.imageWrapper}>
                 {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} className={styles.image} />
+                  <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.image} style={{ objectFit: "cover" }} />
                 ) : (
                   <div className={styles.placeholder}>🎂</div>
                 )}
