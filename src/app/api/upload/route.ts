@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import crypto from "crypto";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,22 +18,21 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    
-    // Create a unique filename
-    const ext = path.extname(file.name) || ".jpg";
-    const uniqueId = crypto.randomBytes(8).toString("hex");
-    const filename = `${uniqueId}${ext}`;
 
-    // Ensure public/uploads directory exists
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadsDir, { recursive: true });
+    // Upload to Cloudinary using a stream
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "cake-corner" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(buffer);
+    });
 
-    // Write file
-    const filePath = path.join(uploadsDir, filename);
-    await fs.writeFile(filePath, buffer);
-
-    // Return the public URL
-    const fileUrl = `/uploads/${filename}`;
+    // Return the secure Cloudinary URL
+    const fileUrl = (result as any).secure_url;
     return NextResponse.json({ url: fileUrl });
   } catch (error) {
     console.error("Upload error:", error);

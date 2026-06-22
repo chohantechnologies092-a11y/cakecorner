@@ -50,7 +50,7 @@ export default function ImageUploadInput({ name, defaultValue = "", placeholder 
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         <input 
-          type="url" 
+          type="text" 
           id={name} 
           name={name} 
           value={url}
