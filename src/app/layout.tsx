@@ -51,6 +51,7 @@ export const metadata: Metadata = {
 import Footer from "@/components/layout/Footer";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import LayoutContent from "@/components/layout/LayoutContent";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 export default function RootLayout({
   children,
@@ -60,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} ${playfair.variable} ${pacifico.variable}`} suppressHydrationWarning>
+        <AnalyticsTracker />
         <CartProvider>
           <LayoutContent header={<HeaderWrapper />} footer={<Footer />}>
             {children}
