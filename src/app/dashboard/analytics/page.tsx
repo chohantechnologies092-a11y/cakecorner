@@ -132,7 +132,7 @@ export default async function AnalyticsDashboard() {
                   {productsMissingSeo.slice(0, 5).map((p) => (
                     <li key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: "0.4rem 0" }}>
                       <span style={{ fontSize: "0.9rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "70%" }}>{p.name}</span>
-                      <Link href={`/dashboard/products/${p.id}`} style={{ fontSize: "0.85rem", color: "var(--color-primary)", textDecoration: "none" }}>Edit →</Link>
+                      <Link href={`/dashboard/products/${p.id}/edit`} style={{ fontSize: "0.85rem", color: "var(--color-primary)", textDecoration: "none" }}>Edit →</Link>
                     </li>
                   ))}
                   {missingProductsCount > 5 && <li style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>+ {missingProductsCount - 5} more...</li>}
