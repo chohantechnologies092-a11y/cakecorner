@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 
 const baseUrl = 'http://localhost:3000'; // Replace with actual domain later
 
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
