@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const { path } = await req.json();
     if (!path) return NextResponse.json({ error: "Path missing" }, { status: 400 });
 
-    const ipStr = req.headers.get("x-forwarded-for") || req.ip || "unknown";
+    const ipStr = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
     const ip = ipStr.split(",")[0].trim(); // Get first IP if multiple
     
     // Check Netlify/Vercel standard headers first
