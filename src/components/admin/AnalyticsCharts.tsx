@@ -1,6 +1,6 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from "recharts";
 
 export function DailyViewsChart({ data }: { data: any[] }) {
   return (
@@ -25,6 +25,25 @@ export function DailyViewsChart({ data }: { data: any[] }) {
             animationDuration={1500}
           />
         </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function LocationBarChart({ data }: { data: any[] }) {
+  return (
+    <div style={{ width: "100%", height: 300 }}>
+      <ResponsiveContainer>
+        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#eee" />
+          <XAxis type="number" hide />
+          <YAxis dataKey="name" type="category" tick={{ fill: "#334155", fontSize: 12, fontWeight: 500 }} axisLine={false} tickLine={false} width={120} />
+          <Tooltip 
+            contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+            cursor={{ fill: "#f1f5f9" }}
+          />
+          <Bar dataKey="views" name="Views" fill="#d97706" radius={[0, 4, 4, 0]} barSize={24} animationDuration={1500} />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

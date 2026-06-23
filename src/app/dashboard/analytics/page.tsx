@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { DailyViewsChart } from "@/components/admin/AnalyticsCharts";
+import { DailyViewsChart, LocationBarChart } from "@/components/admin/AnalyticsCharts";
 
 export default async function AnalyticsDashboard() {
   // 1. Fetch Traffic Analytics
@@ -22,8 +22,16 @@ export default async function AnalyticsDashboard() {
 
   const topLocations = await prisma.locationAnalytics.findMany({
     orderBy: { views: "desc" },
-    take: 5,
+    take: 8,
   });
+
+  const totalLocationViews = topLocations.reduce((sum, loc) => sum + loc.views, 0);
+
+  const locationChartData = topLocations.map(loc => ({
+    name: loc.city !== "Localhost" && loc.city !== "Unknown" ? `${loc.city}, ${loc.country}` : loc.country,
+    views: loc.views,
+    percentage: totalLocationViews > 0 ? Math.round((loc.views / totalLocationViews) * 100) : 0
+  }));
 
   // Calculate totals
   const totalViews = dailyData.reduce((sum, d) => sum + d.pageViews, 0);
@@ -101,16 +109,22 @@ export default async function AnalyticsDashboard() {
           </div>
 
           <div style={{ background: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #f1f5f9" }}>
-            <h3 style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>Top Regions</h3>
-            {topLocations.length > 0 ? (
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {topLocations.map((loc, i) => (
-                  <li key={loc.id} style={{ display: "flex", justifyContent: "space-between", padding: "0.75rem 0", borderBottom: i < topLocations.length - 1 ? "1px solid #eee" : "none" }}>
-                    <span style={{ color: "#334155", fontWeight: "500", fontSize: "0.9rem" }}>{loc.city}, {loc.country}</span>
-                    <span style={{ background: "#fef3c7", color: "#d97706", padding: "0.2rem 0.6rem", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "600" }}>{loc.views} Views</span>
-                  </li>
-                ))}
-              </ul>
+            <h3 style={{ fontSize: "1.1rem", marginBottom: "1.5rem" }}>Top Regions</h3>
+            {locationChartData.length > 0 ? (
+              <>
+                <LocationBarChart data={locationChartData} />
+                <ul style={{ listStyle: "none", padding: 0, margin: "1.5rem 0 0 0", borderTop: "1px solid #eee", paddingTop: "1rem" }}>
+                  {locationChartData.slice(0, 5).map((loc, i) => (
+                    <li key={i} style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0" }}>
+                      <span style={{ color: "#334155", fontWeight: "500", fontSize: "0.9rem" }}>{loc.name}</span>
+                      <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                        <span style={{ fontSize: "0.85rem", color: "#888", width: "40px", textAlign: "right" }}>{loc.percentage}%</span>
+                        <span style={{ background: "#fef3c7", color: "#d97706", padding: "0.2rem 0.6rem", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "600", minWidth: "60px", textAlign: "center" }}>{loc.views} Views</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
               <p style={{ color: "#888", fontSize: "0.9rem" }}>No location data yet.</p>
             )}

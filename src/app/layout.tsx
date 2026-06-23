@@ -54,16 +54,20 @@ import Footer from "@/components/layout/Footer";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import LayoutContent from "@/components/layout/LayoutContent";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import { auth } from "@/auth";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  const isInternalUser = !!session?.user;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} ${playfair.variable} ${pacifico.variable}`} suppressHydrationWarning>
-        <AnalyticsTracker />
+        {!isInternalUser && <AnalyticsTracker />}
         <CartProvider>
           <LayoutContent header={<HeaderWrapper />} footer={<Footer />}>
             {children}
