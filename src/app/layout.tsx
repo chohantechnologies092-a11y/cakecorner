@@ -3,6 +3,8 @@ import { Playfair_Display, Outfit, Pacifico } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 
+export const dynamic = 'force-dynamic';
+
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
   variable: '--font-heading',
