@@ -3,9 +3,29 @@
   min-height: 90vh;
   display: flex;
   align-items: center;
-  background-color: var(--color-background);
   padding: 10rem 0 12rem 0;
   overflow: hidden;
+}
+
+.bgVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.videoOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+  opacity: 0.65; /* Reduced opacity to make video more visible */
+  z-index: 0;
 }
 
 /* Beautiful Animated Gradients / Blobs */
@@ -242,6 +262,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateX(3rem);
 }
 
 .imageBackdrop {
@@ -274,9 +295,11 @@
 }
 
 .mainImage {
-  object-fit: contain;
+  object-fit: cover;
   width: 90%;
-  height: auto;
+  aspect-ratio: 1;
+  border-radius: 40px;
+  border: 10px solid white;
   filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
 }
 
@@ -391,6 +414,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .imageContainer {
+    transform: translateX(0);
   }
 
   .title {

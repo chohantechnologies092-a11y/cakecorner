@@ -53,24 +53,47 @@
   flex: 0 0 auto;
   scroll-snap-align: center;
   text-decoration: none;
-
+  gap: 1.5rem;
+  padding: 1rem;
 }
 
 .imageWrapper {
-  width: 180px;
-  height: 180px;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
-  padding: 10px;
-  margin-bottom: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  background: transparent;
-  border: 2px dashed rgba(74, 190, 179, 0.3);
+  padding: 12px;
+  background: #fffdf9; /* Creamy cake plate color */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04), inset 0 0 15px rgba(244, 161, 187, 0.1); /* Soft pink inner glow */
+  border: 2px solid #fff;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
 }
 
 .itemCard:hover .imageWrapper {
-  transform: translateY(-10px) scale(1.05);
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 35px rgba(244, 161, 187, 0.25); /* Pink shadow */
+}
+
+/* Bakery frosting / pearls ring */
+.imageWrapper::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border-radius: 50%;
+  border: 3px dotted #f4a1bb; /* Pink frosting dots */
+  z-index: 0;
+  transition: all 0.5s ease;
+}
+
+.itemCard:hover .imageWrapper::before {
   border-color: var(--color-primary);
-  box-shadow: 0 15px 30px rgba(74, 190, 179, 0.15);
+  border-style: dashed;
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .imageInner {
@@ -79,18 +102,20 @@
   border-radius: 50%;
   overflow: hidden;
   position: relative;
-  background-color: #f9f9f9;
+  background-color: #fcfcfc;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Soft shadow for the image inside the plate */
 }
 
 .image {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .itemCard:hover .image {
-  transform: scale(1.1);
+  transform: scale(1.1) rotate(2deg);
 }
 
 .placeholder {
@@ -105,12 +130,16 @@
 .itemTitle {
   font-family: var(--font-heading);
   font-size: 1.5rem;
+  font-weight: 700;
   color: #333;
-  transition: color 0.3s ease;
+  margin: 0;
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
 .itemCard:hover .itemTitle {
   color: var(--color-primary);
+  transform: translateY(-5px);
 }
 
 .buttonWrapper {

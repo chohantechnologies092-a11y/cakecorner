@@ -323,28 +323,53 @@
   }
 
   .logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    transform: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .logoLink {
+    gap: 0.3rem;
+    padding-left: 0;
   }
 
   .logoImageWrapper {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 6px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 4px;
+    margin-bottom: 0;
   }
 
   .logoTitle {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
+    white-space: nowrap;
   }
 
   .logoTextWrapper {
     display: flex;
+  }
+
+  .iconCircle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .iconCircle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .cartBadge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
+    top: -2px;
+    right: -2px;
   }
 
   .navCenter {

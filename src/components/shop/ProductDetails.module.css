@@ -113,23 +113,40 @@
 }
 
 .description :global(ul) {
-  padding-left: 1.5rem !important;
-  margin-left: 1rem !important;
-  margin-bottom: 1rem !important;
+  list-style: disc !important;
   list-style-type: disc !important;
+  padding-left: 2.5rem !important;
+  margin-block: 1rem !important;
 }
 
 .description :global(ol) {
-  padding-left: 1.5rem !important;
-  margin-left: 1rem !important;
-  margin-bottom: 1rem !important;
+  list-style: decimal !important;
   list-style-type: decimal !important;
+  padding-left: 2.5rem !important;
+  margin-block: 1rem !important;
 }
 
 .description :global(li) {
-  margin-bottom: 0.5rem !important;
-  list-style-position: inside !important;
   display: list-item !important;
+  list-style-type: inherit !important;
+  list-style-position: outside !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.description :global(li::before) {
+  display: none !important;
+  content: none !important;
+}
+
+/* Also handle case where Quill uses data-list attribute for list styles without ul/ol wrappers */
+.description :global(li[data-list="bullet"]) {
+  list-style-type: disc !important;
+  margin-left: 2rem !important;
+}
+
+.description :global(li[data-list="ordered"]) {
+  list-style-type: decimal !important;
+  margin-left: 2rem !important;
 }
 
 /* Selection Areas */

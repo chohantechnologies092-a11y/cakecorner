@@ -19,9 +19,9 @@ export default async function FeaturedCategories() {
           <h2 className={styles.title}>What Are You Looking For?</h2>
         </div>
 
-        <AutoSlider className={styles.grid} speed={4000}>
-          {categories.map((category) => (
-            <Link key={category.id} href={`/shop?category=${category.slug}`} className={styles.itemCard}>
+        <AutoSlider className={styles.grid} speed={4000} showControls={true} isInfinite={true}>
+          {[...categories, ...categories].map((category, index) => (
+            <Link key={`${category.id}-${index}`} href={`/shop?category=${category.slug}`} className={styles.itemCard}>
               <div className={styles.imageWrapper}>
                 <div className={styles.imageInner}>
                   {category.imageUrl ? (
