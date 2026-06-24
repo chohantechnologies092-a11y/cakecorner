@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./Shop.module.css";
 import ProductCardActions from "@/components/shop/ProductCardActions";
 import CategorySidebar from "@/components/shop/CategorySidebar";
+import { stripHtml } from "@/lib/utils";
 
 export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string; search?: string }> }) {
   const { category: categorySlug, page: pageStr, search: searchQuery } = await searchParams;
@@ -121,7 +122,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                       </span>
                       <h3 className={styles.productTitle}>{product.name}</h3>
                       <p className={styles.productDesc}>
-                        {product.description.replace(/<[^>]*>?/gm, '').slice(0, 80)}...
+                        {stripHtml(product.description).slice(0, 80)}...
                       </p>
                       <div className={styles.priceRow}>
                         <span className={styles.price}>£{product.price.toFixed(2)}</span>

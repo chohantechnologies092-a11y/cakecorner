@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata, ResolvingMetadata } from "next";
 import ProductDetails from "@/components/shop/ProductDetails";
+import { stripHtml } from "@/lib/utils";
 
 export async function generateMetadata(
   props: { params: Promise<{ id: string }> },
@@ -17,13 +18,13 @@ export async function generateMetadata(
 
   return {
     title: product.metaTitle || `${product.name} | Cake Shop`,
-    description: product.metaDescription || product.description.replace(/<[^>]*>?/gm, '').slice(0, 150),
+    description: product.metaDescription || stripHtml(product.description).slice(0, 150),
     alternates: {
       canonical: product.canonicalUrl || `/product/${product.id}`,
     },
     openGraph: {
       title: product.metaTitle || product.name,
-      description: product.metaDescription || product.description.replace(/<[^>]*>?/gm, '').slice(0, 150) || undefined,
+      description: product.metaDescription || stripHtml(product.description).slice(0, 150) || undefined,
       images: product.imageUrl ? [product.imageUrl] : [],
     },
   };
@@ -52,7 +53,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.metaDescription || product.description.replace(/<[^>]*>?/gm, ''),
+    description: product.metaDescription || stripHtml(product.description),
     image: product.imageUrl ? [product.imageUrl] : undefined,
     offers: {
       '@type': 'Offer',

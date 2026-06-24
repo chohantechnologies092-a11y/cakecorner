@@ -6,6 +6,7 @@ import styles from "../page.module.css";
 import CsvImportModal from "@/components/admin/CsvImportModal";
 import DashboardSearch from "@/components/admin/DashboardSearch";
 import DashboardCategoryFilter from "@/components/admin/DashboardCategoryFilter";
+import { stripHtml } from "@/lib/utils";
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string, category?: string }> }) {
   const { page: pageStr, q, category: categoryId } = await searchParams;
@@ -117,7 +118,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                       )}
                       <div>
                         <p style={{ fontWeight: "600" }}>{product.name}</p>
-                        <p style={{ fontSize: "0.75rem", color: "#888", marginTop: "0.1rem" }}>{product.description.replace(/<[^>]*>?/gm, '').slice(0, 50)}...</p>
+                        <p style={{ fontSize: "0.75rem", color: "var(--color-text-light, #888)", marginTop: "0.1rem" }}>{stripHtml(product.description).slice(0, 50)}...</p>
                       </div>
                     </div>
                   </td>
