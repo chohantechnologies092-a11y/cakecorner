@@ -2,9 +2,20 @@ import { prisma } from "@/lib/db";
 import { deleteCategory } from "@/lib/actions";
 import Link from "next/link";
 import styles from "../page.module.css";
+import DashboardSearch from "@/components/admin/DashboardSearch";
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q } = await searchParams;
+
+  const whereClause = q ? {
+    OR: [
+      { name: { contains: q, mode: 'insensitive' as const } },
+      { description: { contains: q, mode: 'insensitive' as const } }
+    ]
+  } : {};
+
   const categories = await prisma.category.findMany({
+    where: whereClause,
     orderBy: { sortOrder: "asc" },
     include: { _count: { select: { products: true } } },
   });
@@ -18,12 +29,15 @@ export default async function CategoriesPage() {
             {categories.length} categories
           </p>
         </div>
-        <Link
-          href="/dashboard/categories/new"
-          style={{ padding: "0.6rem 1.4rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none", fontWeight: "500", fontSize: "0.9rem" }}
-        >
-          + Add Category
-        </Link>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <DashboardSearch placeholder="Search categories..." />
+          <Link
+            href="/dashboard/categories/new"
+            style={{ padding: "0.6rem 1.4rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none", fontWeight: "500", fontSize: "0.9rem", whiteSpace: "nowrap" }}
+          >
+            + Add Category
+          </Link>
+        </div>
       </header>
 
       {categories.length === 0 ? (

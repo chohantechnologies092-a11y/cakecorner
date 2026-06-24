@@ -4,20 +4,30 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "../page.module.css";
 import CsvImportModal from "@/components/admin/CsvImportModal";
+import DashboardSearch from "@/components/admin/DashboardSearch";
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
-  const { page: pageStr } = await searchParams;
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string }> }) {
+  const { page: pageStr, q } = await searchParams;
   const currentPage = pageStr ? parseInt(pageStr, 10) : 1;
   const pageSize = 20;
 
+  const whereClause = q ? {
+    OR: [
+      { name: { contains: q, mode: 'insensitive' as const } },
+      { description: { contains: q, mode: 'insensitive' as const } },
+      { category: { name: { contains: q, mode: 'insensitive' as const } } }
+    ]
+  } : {};
+
   const [products, totalProducts, categories] = await Promise.all([
     prisma.product.findMany({
+      where: whereClause,
       orderBy: { createdAt: "desc" },
       include: { category: true },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
-    prisma.product.count(),
+    prisma.product.count({ where: whereClause }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
 
@@ -25,16 +35,22 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <header className={styles.header}>
-        <div>
+      <header className={styles.header} style={{ flexWrap: "wrap", gap: "1rem" }}>
+        <div style={{ flex: "1 1 200px" }}>
           <h1 className={styles.title}>Products</h1>
-          <p style={{ color: "#888", fontSize: "0.9rem", marginTop: "0.25rem" }}>{products.length} products</p>
+          <p style={{ color: "#888", fontSize: "0.9rem", marginTop: "0.25rem" }}>{totalProducts} products</p>
         </div>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <CsvImportModal />
-          <Link href="/dashboard/products/new" style={{ padding: "0.6rem 1.4rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none", fontWeight: "500", fontSize: "0.9rem" }}>
-            + Add Product
-          </Link>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap", flex: "2 1 auto", justifyContent: "flex-end" }}>
+          <div style={{ flex: "1 1 250px", maxWidth: "400px" }}>
+            <DashboardSearch placeholder="Search products..." />
+          </div>
+          <div style={{ display: "flex", gap: "0.8rem" }}>
+            <CsvImportModal />
+            <Link href="/dashboard/products/new" style={{ padding: "0.6rem 1.2rem", background: "var(--color-primary)", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: "600", fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap", boxShadow: "0 4px 12px rgba(0, 145, 147, 0.25)", transition: "transform 0.2s" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add Product
+            </Link>
+          </div>
         </div>
       </header>
 
