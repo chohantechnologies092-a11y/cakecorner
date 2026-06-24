@@ -56,6 +56,8 @@ import LayoutContent from "@/components/layout/LayoutContent";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { auth } from "@/auth";
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -67,12 +69,14 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} ${playfair.variable} ${pacifico.variable}`} suppressHydrationWarning>
-        {!isInternalUser && <AnalyticsTracker />}
-        <CartProvider>
-          <LayoutContent header={<HeaderWrapper />} footer={<Footer />}>
-            {children}
-          </LayoutContent>
-        </CartProvider>
+        <ThemeProvider>
+          {!isInternalUser && <AnalyticsTracker />}
+          <CartProvider>
+            <LayoutContent header={<HeaderWrapper />} footer={<Footer />}>
+              {children}
+            </LayoutContent>
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

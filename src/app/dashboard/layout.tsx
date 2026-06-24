@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userRole = session.user.role || "EMPLOYEE";
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} dashboard-scope`}>
       <Sidebar userRole={userRole} />
       <main className={styles.main}>{children}</main>
     </div>

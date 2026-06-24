@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import styles from "@/app/dashboard/layout.module.css";
 
 const ALL_NAV_ITEMS = [
@@ -24,6 +25,13 @@ export default function Sidebar({ userRole }: { userRole: string }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  // Handle hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close mobile sidebar when route changes
   useEffect(() => {
@@ -67,10 +75,23 @@ export default function Sidebar({ userRole }: { userRole: string }) {
               </Link>
             );
           })}
-          <Link href="/" className={styles.navLink} style={{ marginTop: "auto", borderTop: "1px solid #eee", paddingTop: "1rem" }} title={isCollapsed ? "Back to Store" : undefined}>
+          <Link href="/" className={styles.navLink} style={{ marginTop: "auto", borderTop: "1px solid var(--color-border, #eee)", paddingTop: "1rem" }} title={isCollapsed ? "Back to Store" : undefined}>
             <span className={styles.navIcon} style={{ fontSize: "1.2rem", fontStyle: "normal" }}>←</span>
             <span className={styles.navText}>Back to Store</span>
           </Link>
+          
+          {mounted && (
+            <button 
+              className={styles.themeToggleBtn} 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              <span className={styles.navIcon} style={{ fontSize: "1.2rem", fontStyle: "normal" }}>
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </span>
+              {!isCollapsed && <span className={styles.navText}>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+            </button>
+          )}
 
           <button className={styles.collapseBtn} onClick={() => setIsCollapsed(!isCollapsed)}>
             {isCollapsed ? "▶" : "◀ Collapse"}

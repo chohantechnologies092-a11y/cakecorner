@@ -170,11 +170,11 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         
         {allQuantityOptions.length > 0 && (
           <div className={styles.selectionGroup}>
-            <label className={styles.selectionLabel}>Select Pack / Box Quantity</label>
+            <label className={styles.selectionLabel}>Quantity</label>
             <div className={styles.optionsGrid}>
               {allQuantityOptions.map((q: any) => (
                 <button key={q.id} onClick={() => setSelectedQuantityOption(q)} className={`${styles.optionBtn} ${selectedQuantityOption?.id === q.id ? styles.active : ''}`}>
-                  {q.name} {q.priceModifier > 0 && `(+£${q.priceModifier.toFixed(2)})`}
+                  {q.name}
                 </button>
               ))}
             </div>

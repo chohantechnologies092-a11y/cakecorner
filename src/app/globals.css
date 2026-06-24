@@ -8,7 +8,27 @@
   --color-text-light: #795548; /* Warm Brown */
   --color-background: #fffcf9; /* Creamy White */
   --color-background-alt: #fdf5e6; /* Old Lace */
-  
+}
+
+[data-theme="dark"] .dashboard-scope {
+  --color-primary: #00adb0; /* Brighter Teal for dark mode */
+  --color-primary-dark: #00d5d8;
+  --color-primary-light: #007678;
+  --color-secondary: #e6b270; /* Brighter Caramel Gold */
+  --color-text-main: #e0e0e0; /* Off-white for dark mode */
+  --color-text-light: #aaaaaa; /* Lighter gray */
+  --color-background: #121212; /* Very dark gray */
+  --color-background-alt: #1e1e1e; /* Slightly lighter dark gray */
+  --color-background-glass: rgba(18, 18, 18, 0.85);
+  --color-border-glass: rgba(255, 255, 255, 0.1);
+  --color-border: #333;
+}
+
+.dashboard-scope {
+  color: var(--color-text-main);
+}
+
+:root {
   --font-heading: 'Playfair Display', serif;
   --font-script: 'Pacifico', cursive;
   --font-body: 'Outfit', sans-serif;
@@ -36,7 +56,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: #333;
+  color: var(--color-text-main, #333);
   margin-bottom: 1rem;
 }
 

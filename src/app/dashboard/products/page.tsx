@@ -5,19 +5,26 @@ import Image from "next/image";
 import styles from "../page.module.css";
 import CsvImportModal from "@/components/admin/CsvImportModal";
 import DashboardSearch from "@/components/admin/DashboardSearch";
+import DashboardCategoryFilter from "@/components/admin/DashboardCategoryFilter";
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string }> }) {
-  const { page: pageStr, q } = await searchParams;
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string, category?: string }> }) {
+  const { page: pageStr, q, category: categoryId } = await searchParams;
   const currentPage = pageStr ? parseInt(pageStr, 10) : 1;
   const pageSize = 20;
 
-  const whereClause = q ? {
-    OR: [
+  const whereClause: any = {};
+  
+  if (q) {
+    whereClause.OR = [
       { name: { contains: q, mode: 'insensitive' as const } },
       { description: { contains: q, mode: 'insensitive' as const } },
       { category: { name: { contains: q, mode: 'insensitive' as const } } }
-    ]
-  } : {};
+    ];
+  }
+
+  if (categoryId) {
+    whereClause.categoryId = categoryId;
+  }
 
   const [products, totalProducts, categories] = await Promise.all([
     prisma.product.findMany({
@@ -33,6 +40,15 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   const totalPages = Math.ceil(totalProducts / pageSize);
 
+  const searchParamsString = new URLSearchParams({
+    ...(q && { q }),
+    ...(categoryId && { category: categoryId }),
+  }).toString();
+  
+  const createPageUrl = (page: number) => {
+    return `/dashboard/products?page=${page}${searchParamsString ? `&${searchParamsString}` : ''}`;
+  };
+
   return (
     <div>
       <header className={styles.header} style={{ flexWrap: "wrap", gap: "1rem" }}>
@@ -41,6 +57,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           <p style={{ color: "#888", fontSize: "0.9rem", marginTop: "0.25rem" }}>{totalProducts} products</p>
         </div>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap", flex: "2 1 auto", justifyContent: "flex-end" }}>
+          <div style={{ flex: "0 1 200px" }}>
+            <DashboardCategoryFilter categories={categories} />
+          </div>
           <div style={{ flex: "1 1 250px", maxWidth: "400px" }}>
             <DashboardSearch placeholder="Search products..." />
           </div>
@@ -64,18 +83,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         </div>
       )}
 
-      <div style={{ background: "white", borderRadius: "var(--border-radius-sm)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
+      <div style={{ background: "var(--color-background-glass, white)", borderRadius: "var(--border-radius-sm)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
         {products.length === 0 ? (
           <div style={{ padding: "4rem", textAlign: "center" }}>
             <p style={{ fontSize: "3rem" }}>🎂</p>
             <h3 style={{ margin: "1rem 0 0.5rem" }}>No Products Yet</h3>
-            <p style={{ color: "#888", marginBottom: "1.5rem" }}>Add your first cake to the menu.</p>
+            <p style={{ color: "var(--color-text-light, #888)", marginBottom: "1.5rem" }}>Add your first cake to the menu.</p>
             <Link href="/dashboard/products/new" style={{ padding: "0.75rem 1.5rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none" }}>Add First Product</Link>
           </div>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
             <thead>
-              <tr style={{ background: "#f9f9f9", borderBottom: "2px solid #eee" }}>
+              <tr style={{ background: "var(--color-background-alt, #f9f9f9)", borderBottom: "2px solid var(--color-border-glass, #eee)" }}>
                 <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Product</th>
                 <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Category</th>
                 <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Price</th>
@@ -86,7 +105,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                <tr key={product.id} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)" }}>
                   <td style={{ padding: "1rem 1.5rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                       {product.imageUrl ? (
@@ -131,18 +150,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         )}
 
         {totalPages > 1 && (
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.5rem", borderTop: "1px solid #eee", background: "#fafafa" }}>
-            <div style={{ fontSize: "0.85rem", color: "#666" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.5rem", borderTop: "1px solid var(--color-border-glass, #eee)", background: "var(--color-background-glass, #fafafa)" }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--color-text-light, #666)" }}>
               Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalProducts)} of {totalProducts} products
             </div>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               {currentPage > 1 && (
-                <Link href={`/dashboard/products?page=${currentPage - 1}`} style={{ padding: "0.4rem 0.8rem", border: "1px solid #ddd", borderRadius: "6px", textDecoration: "none", color: "#333", fontSize: "0.85rem", background: "#fff" }}>
+                <Link href={createPageUrl(currentPage - 1)} style={{ padding: "0.4rem 0.8rem", border: "1px solid var(--color-border-glass, #ddd)", borderRadius: "6px", textDecoration: "none", color: "var(--color-text-main, #333)", fontSize: "0.85rem", background: "var(--color-background-glass, #fff)" }}>
                   Previous
                 </Link>
               )}
               {currentPage < totalPages && (
-                <Link href={`/dashboard/products?page=${currentPage + 1}`} style={{ padding: "0.4rem 0.8rem", border: "1px solid #ddd", borderRadius: "6px", textDecoration: "none", color: "#333", fontSize: "0.85rem", background: "#fff" }}>
+                <Link href={createPageUrl(currentPage + 1)} style={{ padding: "0.4rem 0.8rem", border: "1px solid var(--color-border-glass, #ddd)", borderRadius: "6px", textDecoration: "none", color: "var(--color-text-main, #333)", fontSize: "0.85rem", background: "var(--color-background-glass, #fff)" }}>
                   Next
                 </Link>
               )}
