@@ -235,7 +235,7 @@ export async function createOrder(data: {
   notes?: string | null;
   deliveryFee?: number;
   paymentMethod?: string;
-  items: { productId: string; quantity: number; price: number; size?: string | null; flavor?: string | null; photoUrl?: string | null }[];
+  items: { productId: string; quantity: number; price: number; size?: string | null; flavor?: string | null; quantityOption?: string | null; photoUrl?: string | null }[];
 }) {
   try {
     let total = data.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
