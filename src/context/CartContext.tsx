@@ -11,6 +11,7 @@ export interface CartItem {
   quantity: number;
   size?: string;
   flavor?: string;
+  quantityOption?: string;
   photoUrl?: string;
 }
 
@@ -55,6 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (i) => i.productId === product.productId && 
                i.size === product.size && 
                i.flavor === product.flavor && 
+               i.quantityOption === product.quantityOption &&
                i.photoUrl === product.photoUrl
       );
       if (existing) {

@@ -195,10 +195,11 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     )}
                     <div>
                       <span style={{ fontWeight: "600" }}>{item.product.name}</span>
-                      {(item.size || item.flavor) && (
-                        <div style={{ fontSize: "0.8rem", color: "#666", marginTop: "0.25rem" }}>
+                      {(item.size || item.flavor || item.quantityOption) && (
+                        <div style={{ fontSize: "0.8rem", color: "#666", marginTop: "0.25rem", display: "flex", gap: "0.5rem" }}>
                           {item.size && <span>Size: {item.size} </span>}
                           {item.flavor && <span>Flavor: {item.flavor}</span>}
+                          {item.quantityOption && <span>Pack: {item.quantityOption}</span>}
                         </div>
                       )}
                       {item.photoUrl && (

@@ -20,10 +20,13 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   const allSizes = product.baseSize 
     ? [{ id: 'base', name: product.baseSize, priceModifier: product.price }, ...product.sizes]
     : product.sizes;
+    
+  const allQuantityOptions = product.quantityOptions || [];
 
   const [activeImage, setActiveImage] = useState(allImages[0] || "");
   const [selectedSize, setSelectedSize] = useState<any>(allSizes[0] || null);
   const [selectedFlavor, setSelectedFlavor] = useState<any>(product.flavors[0] || null);
+  const [selectedQuantityOption, setSelectedQuantityOption] = useState<any>(allQuantityOptions[0] || null);
   const [quantity, setQuantity] = useState(1);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
@@ -31,9 +34,13 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
 
   const isPhotoCake = product.isPhotoCake === true;
 
-  const finalPrice = selectedSize && selectedSize.priceModifier > 0 
+  let finalPrice = selectedSize && selectedSize.priceModifier > 0 
     ? selectedSize.priceModifier 
     : product.price;
+    
+  if (selectedQuantityOption && selectedQuantityOption.priceModifier > 0) {
+    finalPrice += selectedQuantityOption.priceModifier;
+  }
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -56,6 +63,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
       imageUrl: product.imageUrl,
       size: selectedSize?.name,
       flavor: selectedFlavor?.name,
+      quantityOption: selectedQuantityOption?.name,
       photoUrl: photoPreview || undefined,
     });
     
@@ -68,6 +76,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         imageUrl: product.imageUrl,
         size: selectedSize?.name,
         flavor: selectedFlavor?.name,
+        quantityOption: selectedQuantityOption?.name,
         photoUrl: photoPreview || undefined,
       });
     }
@@ -153,6 +162,19 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
               {product.flavors.map((flavor: any) => (
                 <button key={flavor.id} onClick={() => setSelectedFlavor(flavor)} className={`${styles.optionBtn} ${selectedFlavor?.id === flavor.id ? styles.active : ''}`}>
                   {flavor.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {allQuantityOptions.length > 0 && (
+          <div className={styles.selectionGroup}>
+            <label className={styles.selectionLabel}>Select Pack / Box Quantity</label>
+            <div className={styles.optionsGrid}>
+              {allQuantityOptions.map((q: any) => (
+                <button key={q.id} onClick={() => setSelectedQuantityOption(q)} className={`${styles.optionBtn} ${selectedQuantityOption?.id === q.id ? styles.active : ''}`}>
+                  {q.name} {q.priceModifier > 0 && `(+£${q.priceModifier.toFixed(2)})`}
                 </button>
               ))}
             </div>

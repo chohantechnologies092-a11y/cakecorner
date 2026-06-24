@@ -58,6 +58,7 @@ export default function CheckoutPage() {
           price: i.price,
           size: i.size || null,
           flavor: i.flavor || null,
+          quantityOption: i.quantityOption || null,
           photoUrl: i.photoUrl || null
         })),
       });
@@ -215,9 +216,9 @@ export default function CheckoutPage() {
                     )}
                     <div className={styles.itemInfo}>
                       <h3 className={styles.itemName}>{item.name}</h3>
-                      {(item.size || item.flavor) && (
+                      {(item.size || item.flavor || item.quantityOption) && (
                         <p className={styles.itemMeta}>
-                          {item.size} {item.size && item.flavor ? "•" : ""} {item.flavor}
+                          {[item.size, item.flavor, item.quantityOption].filter(Boolean).join(" • ")}
                         </p>
                       )}
                       <div className={styles.qtyWrapper}>

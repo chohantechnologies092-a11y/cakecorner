@@ -113,6 +113,9 @@ export async function createProduct(formData: FormData) {
   const flavors = flavorsStr ? JSON.parse(flavorsStr) : [];
   const images = imagesStr ? JSON.parse(imagesStr) : [];
   
+  const quantityOptionsStr = formData.get("quantityOptions") as string;
+  const quantityOptions = quantityOptionsStr ? JSON.parse(quantityOptionsStr) : [];
+  
   let featuredImageUrl = formData.get("featuredImage") as string;
   if (!featuredImageUrl && images.length > 0) {
     featuredImageUrl = images[0].url;
@@ -134,6 +137,7 @@ export async function createProduct(formData: FormData) {
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      quantityOptions: { create: quantityOptions.map((q: any) => ({ name: q.name, priceModifier: q.priceModifier })) },
       images: { create: images.map((i: any) => ({ url: i.url, altText: i.altText })) },
     },
   });
@@ -166,6 +170,9 @@ export async function updateProduct(id: string, formData: FormData) {
   const flavors = flavorsStr ? JSON.parse(flavorsStr) : [];
   const images = imagesStr ? JSON.parse(imagesStr) : [];
   
+  const quantityOptionsStr = formData.get("quantityOptions") as string;
+  const quantityOptions = quantityOptionsStr ? JSON.parse(quantityOptionsStr) : [];
+  
   let featuredImageUrl = formData.get("featuredImage") as string;
   if (!featuredImageUrl && images.length > 0) {
     featuredImageUrl = images[0].url;
@@ -174,6 +181,7 @@ export async function updateProduct(id: string, formData: FormData) {
   // For updates, we delete existing relations and recreate them for simplicity
   await prisma.productSize.deleteMany({ where: { productId: id } });
   await prisma.productFlavor.deleteMany({ where: { productId: id } });
+  await prisma.productQuantityOption.deleteMany({ where: { productId: id } });
   await prisma.productImage.deleteMany({ where: { productId: id } });
 
   await prisma.product.update({
@@ -193,6 +201,7 @@ export async function updateProduct(id: string, formData: FormData) {
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      quantityOptions: { create: quantityOptions.map((q: any) => ({ name: q.name, priceModifier: q.priceModifier })) },
       images: { create: images.map((i: any) => ({ url: i.url, altText: i.altText })) },
     },
   });
@@ -262,6 +271,7 @@ export async function createOrder(data: {
             price: i.price,
             size: i.size,
             flavor: i.flavor,
+            quantityOption: i.quantityOption,
             photoUrl: i.photoUrl,
           })),
         },

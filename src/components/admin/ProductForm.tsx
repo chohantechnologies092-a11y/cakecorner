@@ -14,6 +14,7 @@ const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 interface Category { id: string; name: string; }
 interface Size { id?: string; name: string; priceModifier: number; }
 interface Flavor { id?: string; name: string; }
+interface QuantityOption { id?: string; name: string; priceModifier: number; }
 interface Image { id?: string; url: string; altText?: string | null; }
 
 interface ProductFormProps {
@@ -35,6 +36,7 @@ interface ProductFormProps {
     canonicalUrl?: string | null;
     sizes: Size[];
     flavors: Flavor[];
+    quantityOptions?: QuantityOption[];
     images: Image[];
   };
 }
@@ -44,6 +46,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const [loading, setLoading] = useState(false);
   const [sizes, setSizes] = useState<Size[]>(initialData?.sizes || []);
   const [flavors, setFlavors] = useState<Flavor[]>(initialData?.flavors || []);
+  const [quantityOptions, setQuantityOptions] = useState<QuantityOption[]>(initialData?.quantityOptions || []);
   const [images, setImages] = useState<Image[]>(initialData?.images || []);
   const [featuredImage, setFeaturedImage] = useState(initialData?.imageUrl || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -111,6 +114,14 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   };
   const removeFlavor = (idx: number) => setFlavors(flavors.filter((_, i) => i !== idx));
 
+  const addQuantityOption = () => setQuantityOptions([...quantityOptions, { name: "", priceModifier: 0 }]);
+  const updateQuantityOption = (idx: number, field: keyof QuantityOption, value: any) => {
+    const newOpts = [...quantityOptions];
+    newOpts[idx] = { ...newOpts[idx], [field]: value };
+    setQuantityOptions(newOpts);
+  };
+  const removeQuantityOption = (idx: number) => setQuantityOptions(quantityOptions.filter((_, i) => i !== idx));
+
   const addImage = () => setImages([...images, { url: "", altText: "" }]);
   const updateImage = (idx: number, field: keyof Image, value: string) => {
     const newImages = [...images];
@@ -124,6 +135,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       setLoading(true);
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("flavors", JSON.stringify(flavors));
+      formData.append("quantityOptions", JSON.stringify(quantityOptions));
       formData.append("images", JSON.stringify(images));
       formData.append("featuredImage", featuredImage);
       formData.append("description", description);
@@ -242,6 +254,27 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             </div>
           )}
         </div>
+      </div>
+      
+      {/* Custom Quantities */}
+      <div style={{ marginTop: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <h3 style={{ fontSize: "1.1rem", margin: 0 }}>Custom Quantities / Pack Sizes</h3>
+          <button type="button" onClick={addQuantityOption} style={{ padding: "0.4rem 0.8rem", background: "#f0f0f0", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.8rem" }}>+ Add Quantity</button>
+        </div>
+        {quantityOptions.length === 0 ? <p style={{ color: "#888", fontSize: "0.9rem" }}>No custom quantities added. (e.g., Box of 6, 12 Pack)</p> : (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            {quantityOptions.map((q, i) => (
+              <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
+                <input type="text" placeholder="e.g. Box of 6" value={q.name} onChange={(e) => updateQuantityOption(i, "name", e.target.value)} required
+                  style={{ flex: 1, padding: "0.6rem", borderRadius: "6px", border: "1px solid #ddd", fontSize: "0.9rem" }} />
+                <input type="number" placeholder="Price ($)" step="0.01" value={q.priceModifier} onChange={(e) => updateQuantityOption(i, "priceModifier", parseFloat(e.target.value) || 0)} required
+                  style={{ width: "100px", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ddd", fontSize: "0.9rem" }} />
+                <button type="button" onClick={() => removeQuantityOption(i)} style={{ background: "none", border: "none", color: "#d32f2f", cursor: "pointer", padding: "0 0.5rem" }}>✕</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <hr style={{ border: "none", borderTop: "1px solid #eee" }} />

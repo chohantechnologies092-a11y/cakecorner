@@ -52,6 +52,7 @@ model Product {
 
   sizes           ProductSize[]
   flavors         ProductFlavor[]
+  quantityOptions ProductQuantityOption[]
   images          ProductImage[]
   orderItems      OrderItem[]
 }
@@ -69,6 +70,14 @@ model ProductFlavor {
   name      String
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductQuantityOption {
+  id            String  @id @default(cuid())
+  name          String
+  priceModifier Float   @default(0)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductImage {
@@ -99,16 +108,17 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  quantity  Int
-  price     Float
-  size      String?
-  flavor    String?
-  photoUrl  String?
-  orderId   String
-  productId String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  id             String  @id @default(cuid())
+  quantity       Int
+  price          Float
+  size           String?
+  flavor         String?
+  quantityOption String?
+  photoUrl       String?
+  orderId        String
+  productId      String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product @relation(fields: [productId], references: [id])
 }
 
 // ─── Nav Menu ────────────────────────────────────────────────────────────────
