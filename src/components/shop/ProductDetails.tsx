@@ -42,6 +42,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   const [photoPreview, setPhotoPreview] = useState<string>("");
   const [showPickupModal, setShowPickupModal] = useState(false);
   const [customFlavorQuantities, setCustomFlavorQuantities] = useState<Record<string, number>>({});
+  const [purchaseMode, setPurchaseMode] = useState<'standard' | 'custom'>('standard');
 
   const isPhotoCake = product.isPhotoCake === true;
 
@@ -53,19 +54,22 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
     });
   };
 
-  let baseItemPrice = selectedSize && selectedSize.priceModifier > 0 
-    ? selectedSize.priceModifier 
-    : product.price;
-    
-  if (selectedQuantityOption && selectedQuantityOption.priceModifier > 0) {
-    baseItemPrice += selectedQuantityOption.priceModifier;
-  }
-
   const totalSelectedCustomItems = Object.values(customFlavorQuantities).reduce((a, b) => a + b, 0);
 
-  let finalPrice = baseItemPrice;
-  if (product.isCustomAssortment && totalSelectedCustomItems > 0) {
-    finalPrice = baseItemPrice * totalSelectedCustomItems;
+  let finalPrice = product.price;
+
+  if (purchaseMode === 'standard') {
+    if (selectedSize && selectedSize.priceModifier > 0) {
+      finalPrice = selectedSize.priceModifier;
+    }
+  } else if (purchaseMode === 'custom') {
+    if (totalSelectedCustomItems > 0) {
+      finalPrice = product.price * totalSelectedCustomItems;
+    }
+  }
+
+  if (selectedQuantityOption && selectedQuantityOption.priceModifier > 0) {
+    finalPrice += selectedQuantityOption.priceModifier;
   }
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,13 +86,13 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   };
 
   const handleAddToCart = () => {
-    if (product.isCustomAssortment && totalSelectedCustomItems === 0) {
+    if (product.isCustomAssortment && purchaseMode === 'custom' && totalSelectedCustomItems === 0) {
       alert("Please select at least one item for your custom package.");
       return;
     }
 
     let finalFlavor = selectedFlavor?.name;
-    if (product.isCustomAssortment) {
+    if (product.isCustomAssortment && purchaseMode === 'custom') {
       const selections = Object.entries(customFlavorQuantities)
         .filter(([_, qty]) => qty > 0)
         .map(([name, qty]) => `${qty}x ${name}`)
@@ -98,12 +102,14 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
       finalFlavor = product.tiers.map((t: any) => `${t.name}: ${selectedTierFlavors[t.name] || 'None'}`).join(' | ');
     }
 
+    const cartSize = (product.isCustomAssortment && purchaseMode === 'custom') ? `Custom Box (${totalSelectedCustomItems} items)` : selectedSize?.name;
+
     addItem({
       productId: product.id,
       name: product.name,
       price: finalPrice,
       imageUrl: product.imageUrl,
-      size: selectedSize?.name,
+      size: cartSize,
       flavor: finalFlavor,
       quantityOption: selectedQuantityOption?.name,
       photoUrl: photoPreview || undefined,
@@ -116,7 +122,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         name: product.name,
         price: finalPrice,
         imageUrl: product.imageUrl,
-        size: selectedSize?.name,
+        size: cartSize,
         flavor: finalFlavor,
         quantityOption: selectedQuantityOption?.name,
         photoUrl: photoPreview || undefined,
@@ -157,7 +163,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
           <h1 className={styles.title}>{product.name}</h1>
           <p className={styles.price}>
             £{finalPrice.toFixed(2)}
-            {product.isCustomAssortment && totalSelectedCustomItems === 0 && (
+            {product.isCustomAssortment && purchaseMode === 'custom' && totalSelectedCustomItems === 0 && (
               <span style={{ fontSize: "1rem", color: "#666", fontWeight: "normal", marginLeft: "8px" }}>/ piece</span>
             )}
           </p>
@@ -189,7 +195,35 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
           </div>
         )}
 
-        {allSizes.length > 0 && (
+        {product.isCustomAssortment && (
+          <div className={styles.selectionGroup}>
+            <label className={styles.selectionLabel}>Purchase Option</label>
+            <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.5rem" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "1rem", fontWeight: purchaseMode === 'standard' ? 'bold' : 'normal', color: purchaseMode === 'standard' ? '#d81b60' : '#333' }}>
+                <input 
+                  type="radio" 
+                  name="purchaseMode" 
+                  checked={purchaseMode === 'standard'} 
+                  onChange={() => setPurchaseMode('standard')} 
+                  style={{ width: "18px", height: "18px", accentColor: "#d81b60" }}
+                />
+                Standard Pack
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "1rem", fontWeight: purchaseMode === 'custom' ? 'bold' : 'normal', color: purchaseMode === 'custom' ? '#d81b60' : '#333' }}>
+                <input 
+                  type="radio" 
+                  name="purchaseMode" 
+                  checked={purchaseMode === 'custom'} 
+                  onChange={() => setPurchaseMode('custom')} 
+                  style={{ width: "18px", height: "18px", accentColor: "#d81b60" }}
+                />
+                Build Custom Pack
+              </label>
+            </div>
+          </div>
+        )}
+
+        {(!product.isCustomAssortment || purchaseMode === 'standard') && allSizes.length > 0 && (
           <div className={styles.selectionGroup}>
             <label className={styles.selectionLabel}>Select Size</label>
             <div className={styles.optionsGrid}>
@@ -202,7 +236,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
           </div>
         )}
 
-        {product.isCustomAssortment ? (
+        {product.isCustomAssortment && purchaseMode === 'custom' ? (
           <div className={styles.selectionGroup}>
             <label className={styles.selectionLabel}>Build Your Custom Package</label>
             <p style={{ color: "#666", fontSize: "0.9rem", marginBottom: "1rem" }}>Select the quantities for each flavor below:</p>
@@ -244,7 +278,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
               </div>
             </div>
           ))
-        ) : product.flavors.length > 0 && (
+        ) : (!product.isCustomAssortment || purchaseMode === 'standard') && product.flavors.length > 0 ? (
           <div className={styles.selectionGroup}>
             <label className={styles.selectionLabel}>Select Flavor</label>
             <div className={styles.optionsGrid}>
@@ -255,7 +289,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
               ))}
             </div>
           </div>
-        )}
+        ) : null}
         
         {allQuantityOptions.length > 0 && (
           <div className={styles.selectionGroup}>
