@@ -467,6 +467,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
               <label style={{ fontWeight: "600", fontSize: "0.9rem", color: "#d81b60" }}>Per Piece Price (£)</label>
               <input
                 type="number"
+                name="customPiecePrice"
                 step="0.01"
                 value={customPiecePrice}
                 onChange={(e) => setCustomPiecePrice(parseFloat(e.target.value) || 0)}
