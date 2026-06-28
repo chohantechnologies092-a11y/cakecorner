@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      category: true,
+      categories: true,
       sizes: true,
       flavors: true,
       quantityOptions: true,
@@ -66,11 +66,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   const relatedProducts = await prisma.product.findMany({
     where: {
-      categoryId: product.categoryId,
+      categories: { some: { id: { in: product.categories.map((c: any) => c.id) } } },
       id: { not: product.id },
       isVisible: true,
     },
-    include: { category: true, sizes: true, flavors: true },
+    include: { categories: true, sizes: true, flavors: true },
     take: 4,
   });
 
@@ -100,7 +100,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                   </div>
                   <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", flex: 1 }}>
                     <span style={{ fontSize: "0.8rem", fontWeight: "bold", color: "var(--color-secondary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "0.5rem" }}>
-                      {rp.category.name}
+                      {rp.categories.map((c: any) => c.name).join(', ')}
                     </span>
                     <h3 style={{ fontSize: "1.3rem", margin: "0 0 0.5rem 0", color: "#333", fontFamily: "var(--font-heading)" }}>{rp.name}</h3>
                     <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "var(--color-primary)", marginTop: "auto", paddingTop: "1rem" }}>

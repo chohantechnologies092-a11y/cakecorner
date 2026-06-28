@@ -24,7 +24,7 @@ interface ProductFormProps {
     name: string;
     description: string;
     price: number;
-    categoryId: string;
+    categories?: Category[];
     isFeatured: boolean;
     isVisible: boolean;
     isPhotoCake: boolean;
@@ -50,6 +50,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const [images, setImages] = useState<Image[]>(initialData?.images || []);
   const [featuredImage, setFeaturedImage] = useState(initialData?.imageUrl || '');
   const [description, setDescription] = useState(initialData?.description || '');
+  const [categoryIds, setCategoryIds] = useState<string[]>(initialData?.categories?.map(c => c.id) || []);
   const quillRef = useRef<any>(null);
 
   const imageHandler = () => {
@@ -139,6 +140,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       formData.append("images", JSON.stringify(images));
       formData.append("featuredImage", featuredImage);
       formData.append("description", description);
+      formData.append("categoryIds", JSON.stringify(categoryIds));
 
       try {
         if (initialData) {
@@ -175,14 +177,27 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
       <div style={{ display: "flex", gap: "1.5rem" }}>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Category *</label>
-          <select name="categoryId" required defaultValue={initialData?.categoryId}
-            style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd", background: "white" }}>
-            <option value="">Select a category</option>
+          <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Categories *</label>
+          <div style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd", background: "white", display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "200px", overflowY: "auto" }}>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <label key={cat.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "0.9rem" }}>
+                <input 
+                  type="checkbox" 
+                  checked={categoryIds.includes(cat.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setCategoryIds([...categoryIds, cat.id]);
+                    } else {
+                      setCategoryIds(categoryIds.filter(id => id !== cat.id));
+                    }
+                  }}
+                  style={{ width: "1.1rem", height: "1.1rem" }}
+                />
+                {cat.name}
+              </label>
             ))}
-          </select>
+          </div>
+          {categoryIds.length === 0 && <span style={{ color: "#d32f2f", fontSize: "0.8rem" }}>Please select at least one category.</span>}
         </div>
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>

@@ -111,7 +111,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
       {/* Details Section */}
       <div className={styles.details}>
         <div className={styles.titleArea}>
-          <span className={styles.category}>{product.category?.name || "Bakery"}</span>
+          <span className={styles.category}>{product.categories?.map((c: any) => c.name).join(', ') || "Bakery"}</span>
           <h1 className={styles.title}>{product.name}</h1>
           <p className={styles.price}>£{finalPrice.toFixed(2)}</p>
           {product.isPickupAvailable && (

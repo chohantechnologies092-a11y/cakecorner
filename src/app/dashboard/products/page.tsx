@@ -18,20 +18,19 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   if (q) {
     whereClause.OR = [
       { name: { contains: q, mode: 'insensitive' as const } },
-      { description: { contains: q, mode: 'insensitive' as const } },
-      { category: { name: { contains: q, mode: 'insensitive' as const } } }
+      { categories: { some: { name: { contains: q, mode: 'insensitive' as const } } } }
     ];
   }
 
   if (categoryId) {
-    whereClause.categoryId = categoryId;
+    whereClause.categories = { some: { id: categoryId } };
   }
 
   const [products, totalProducts, categories] = await Promise.all([
     prisma.product.findMany({
       where: whereClause,
       orderBy: { createdAt: "desc" },
-      include: { category: true },
+      include: { categories: true },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
@@ -123,9 +122,13 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                     </div>
                   </td>
                   <td style={{ padding: "1rem 1.5rem" }}>
-                    <span style={{ background: "#f0faf9", color: "var(--color-primary)", padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "500" }}>
-                      {product.category.name}
-                    </span>
+                    <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                      {product.categories.map((cat: any) => (
+                        <span key={cat.id} style={{ background: "#f0faf9", color: "var(--color-primary)", padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "500", whiteSpace: "nowrap" }}>
+                          {cat.name}
+                        </span>
+                      ))}
+                    </div>
                   </td>
                   <td style={{ padding: "1rem 1.5rem", fontWeight: "700" }}>£{product.price.toFixed(2)}</td>
                   <td style={{ padding: "1rem 1.5rem" }}>

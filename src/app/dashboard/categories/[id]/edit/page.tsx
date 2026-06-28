@@ -4,11 +4,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import styles from "../../../page.module.css";
 import ImageUploadInput from "@/components/admin/ImageUploadInput";
+import CategoryProductSelector from "@/components/admin/CategoryProductSelector";
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const category = await prisma.category.findUnique({ where: { id } });
+  const category = await prisma.category.findUnique({ 
+    where: { id },
+    include: { products: { select: { id: true } } }
+  });
   if (!category) notFound();
+
+  const allProducts = await prisma.product.findMany({
+    select: { id: true, name: true, imageUrl: true },
+    orderBy: { name: "asc" }
+  });
+
+  const selectedProductIds = category.products.map(p => p.id);
 
   const updateWithId = updateCategory.bind(null, id);
 
@@ -44,6 +55,8 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
             <label htmlFor="imageUrl" style={{ fontWeight: "600", fontSize: "0.9rem" }}>Image URL</label>
             <ImageUploadInput name="imageUrl" defaultValue={category.imageUrl || ""} />
           </div>
+
+          <CategoryProductSelector products={allProducts} initialSelectedIds={selectedProductIds} />
 
           <div style={{ display: "flex", gap: "2rem" }}>
             <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>

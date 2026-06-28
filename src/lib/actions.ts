@@ -18,6 +18,7 @@ export async function createCategory(formData: FormData) {
   const isVisible = formData.get("isVisible") === "true";
   const isFeaturedOnHome = formData.get("isFeaturedOnHome") === "true";
   const description = formData.get("description") as string | null;
+  const productIds = formData.getAll("productIds") as string[];
 
   if (!name) throw new Error("Category name is required.");
 
@@ -25,7 +26,16 @@ export async function createCategory(formData: FormData) {
   const count = await prisma.category.count();
 
   await prisma.category.create({
-    data: { name, slug, description: description || null, imageUrl: imageUrl || null, isVisible, isFeaturedOnHome, sortOrder: count },
+    data: { 
+      name, 
+      slug, 
+      description: description || null, 
+      imageUrl: imageUrl || null, 
+      isVisible, 
+      isFeaturedOnHome, 
+      sortOrder: count,
+      products: { connect: productIds.map(id => ({ id })) }
+    },
   });
 
   revalidatePath("/dashboard/categories");
@@ -42,6 +52,7 @@ export async function updateCategory(id: string, formData: FormData) {
   const isVisible = formData.get("isVisible") === "true";
   const isFeaturedOnHome = formData.get("isFeaturedOnHome") === "true";
   const description = formData.get("description") as string | null;
+  const productIds = formData.getAll("productIds") as string[];
 
   if (!name) throw new Error("Category name is required.");
 
@@ -49,7 +60,15 @@ export async function updateCategory(id: string, formData: FormData) {
 
   await prisma.category.update({
     where: { id },
-    data: { name, slug, description: description || null, imageUrl: imageUrl || null, isVisible, isFeaturedOnHome },
+    data: { 
+      name, 
+      slug, 
+      description: description || null, 
+      imageUrl: imageUrl || null, 
+      isVisible, 
+      isFeaturedOnHome,
+      products: { set: productIds.map(id => ({ id })) }
+    },
   });
 
   revalidatePath("/dashboard/categories");
@@ -74,15 +93,17 @@ export async function getAccessories() {
   const accessories = await prisma.product.findMany({
     where: {
       isVisible: true,
-      category: {
-        name: {
-          contains: "Accessor", // matches Accessories or Accessory
+      categories: {
+        some: {
+          name: {
+            contains: "Accessor", // matches Accessories or Accessory
+          }
         }
       }
     },
     take: 4,
     include: {
-      category: true,
+      categories: true,
       sizes: true,
       flavors: true,
     }
@@ -94,7 +115,7 @@ export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const priceStr = formData.get("price") as string;
-  const categoryId = formData.get("categoryId") as string;
+  const categoryIdsStr = formData.get("categoryIds") as string;
   const isFeatured = formData.get("isFeatured") === "true";
   const isVisible = formData.get("isVisible") !== "false";
   const isPhotoCake = formData.get("isPhotoCake") === "true";
@@ -105,8 +126,10 @@ export async function createProduct(formData: FormData) {
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
 
-  if (!name || !description || !priceStr || !categoryId) {
-    throw new Error("Name, description, price, and category are required.");
+  const categoryIds = categoryIdsStr ? JSON.parse(categoryIdsStr) : [];
+
+  if (!name || !description || !priceStr || categoryIds.length === 0) {
+    throw new Error("Name, description, price, and at least one category are required.");
   }
 
   const sizes = sizesStr ? JSON.parse(sizesStr) : [];
@@ -126,7 +149,7 @@ export async function createProduct(formData: FormData) {
       name,
       description,
       price: parseFloat(priceStr),
-      categoryId,
+      categories: { connect: categoryIds.map((id: string) => ({ id })) },
       imageUrl: featuredImageUrl || null,
       isFeatured,
       isVisible,
@@ -151,7 +174,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const priceStr = formData.get("price") as string;
-  const categoryId = formData.get("categoryId") as string;
+  const categoryIdsStr = formData.get("categoryIds") as string;
   const isFeatured = formData.get("isFeatured") === "true";
   const isVisible = formData.get("isVisible") !== "false";
   const isPhotoCake = formData.get("isPhotoCake") === "true";
@@ -162,8 +185,10 @@ export async function updateProduct(id: string, formData: FormData) {
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
 
-  if (!name || !description || !priceStr || !categoryId) {
-    throw new Error("Name, description, price, and category are required.");
+  const categoryIds = categoryIdsStr ? JSON.parse(categoryIdsStr) : [];
+
+  if (!name || !description || !priceStr || categoryIds.length === 0) {
+    throw new Error("Name, description, price, and at least one category are required.");
   }
 
   const sizes = sizesStr ? JSON.parse(sizesStr) : [];
@@ -190,7 +215,7 @@ export async function updateProduct(id: string, formData: FormData) {
       name,
       description,
       price: parseFloat(priceStr),
-      categoryId,
+      categories: { set: categoryIds.map((id: string) => ({ id })) },
       imageUrl: featuredImageUrl || null,
       isFeatured,
       isVisible,

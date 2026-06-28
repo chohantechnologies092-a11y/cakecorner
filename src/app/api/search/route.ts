@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
           name: true,
           price: true,
           imageUrl: true,
-          category: { select: { slug: true, name: true } },
+          categories: { select: { slug: true, name: true } },
         },
       }),
     ]);

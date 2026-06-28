@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
           price: price,
           imageUrl: finalImageUrl,
           isVisible: isPublished,
-          categoryId: category.id,
+          categories: { connect: [{ id: category.id }] },
           metaTitle: metaTitle,
           metaDescription: metaDescription,
         }

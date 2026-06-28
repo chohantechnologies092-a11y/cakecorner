@@ -3,7 +3,14 @@ import Link from "next/link";
 import styles from "../../page.module.css";
 import ImageUploadInput from "@/components/admin/ImageUploadInput";
 
-export default function NewCategoryPage() {
+import { prisma } from "@/lib/db";
+import CategoryProductSelector from "@/components/admin/CategoryProductSelector";
+
+export default async function NewCategoryPage() {
+  const products = await prisma.product.findMany({
+    select: { id: true, name: true, imageUrl: true },
+    orderBy: { name: "asc" }
+  });
   return (
     <div>
       <header className={styles.header}>
@@ -38,6 +45,8 @@ export default function NewCategoryPage() {
             <ImageUploadInput name="imageUrl" />
             <p style={{ fontSize: "0.8rem", color: "#888", marginTop: "-0.25rem" }}>Shown in the mega menu on hover.</p>
           </div>
+
+          <CategoryProductSelector products={products} />
 
           <div style={{ display: "flex", gap: "2rem" }}>
             <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>

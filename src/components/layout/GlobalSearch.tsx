@@ -7,7 +7,7 @@ import styles from "./GlobalSearch.module.css";
 
 interface SearchResult {
   categories: { id: string; name: string; slug: string; imageUrl: string | null }[];
-  products: { id: string; name: string; price: number; imageUrl: string | null; category: { slug: string; name: string } }[];
+  products: { id: string; name: string; price: number; imageUrl: string | null; categories: { slug: string; name: string }[] }[];
 }
 
 export default function GlobalSearch() {
@@ -141,7 +141,7 @@ export default function GlobalSearch() {
                             )}
                             <div className={styles.productInfo}>
                               <h5 className={styles.productName}>{product.name}</h5>
-                              <span className={styles.productCat}>{product.category?.name}</span>
+                              <span className={styles.productCat}>{product.categories?.map(c => c.name).join(', ')}</span>
                             </div>
                             <div className={styles.productPrice}>£{product.price.toFixed(2)}</div>
                           </Link>

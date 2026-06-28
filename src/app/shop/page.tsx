@@ -13,7 +13,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
   const baseWhere = {
     isVisible: true,
-    ...(categorySlug ? { category: { slug: categorySlug } } : {}),
+    ...(categorySlug ? { categories: { some: { slug: categorySlug } } } : {}),
     ...(searchQuery ? {
       OR: [
         { name: { contains: searchQuery, mode: "insensitive" } },
@@ -26,7 +26,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     prisma.product.findMany({
       where: baseWhere as any,
       orderBy: { createdAt: "desc" },
-      include: { category: true, sizes: true, flavors: true },
+      include: { categories: true, sizes: true, flavors: true },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     }),
@@ -117,9 +117,13 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                       )}
                     </div>
                     <div className={styles.info}>
-                      <span className={styles.categoryTag}>
-                        {product.category.name}
-                      </span>
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.5rem" }}>
+                        {product.categories.map((cat: any) => (
+                          <span key={cat.id} className={styles.categoryTag} style={{ marginBottom: 0 }}>
+                            {cat.name}
+                          </span>
+                        ))}
+                      </div>
                       <h3 className={styles.productTitle}>{product.name}</h3>
                       <p className={styles.productDesc}>
                         {stripHtml(product.description).slice(0, 80)}...
