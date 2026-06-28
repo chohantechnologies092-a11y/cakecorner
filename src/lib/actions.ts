@@ -120,6 +120,7 @@ export async function createProduct(formData: FormData) {
   const isVisible = formData.get("isVisible") !== "false";
   const isPhotoCake = formData.get("isPhotoCake") === "true";
   const isCustomAssortment = formData.get("isCustomAssortment") === "true";
+  const customPiecePrice = parseFloat(formData.get("customPiecePrice") as string) || 0;
   
   const sizesStr = formData.get("sizes") as string;
   const flavorsStr = formData.get("flavors") as string;
