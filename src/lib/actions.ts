@@ -177,8 +177,7 @@ export async function createProduct(formData: FormData) {
     },
   });
 
-  revalidatePath("/dashboard/products");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/dashboard/products");
 }
 
@@ -257,21 +256,18 @@ export async function updateProduct(id: string, formData: FormData) {
     },
   });
 
-  revalidatePath("/dashboard/products");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/dashboard/products");
 }
 
 export async function deleteProduct(id: string) {
   await prisma.product.delete({ where: { id } });
-  revalidatePath("/dashboard/products");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 export async function toggleFeatured(id: string, isFeatured: boolean) {
   await prisma.product.update({ where: { id }, data: { isFeatured } });
-  revalidatePath("/dashboard/products");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
