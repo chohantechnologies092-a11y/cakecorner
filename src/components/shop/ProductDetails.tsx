@@ -53,12 +53,19 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
     });
   };
 
-  let finalPrice = selectedSize && selectedSize.priceModifier > 0 
+  let baseItemPrice = selectedSize && selectedSize.priceModifier > 0 
     ? selectedSize.priceModifier 
     : product.price;
     
   if (selectedQuantityOption && selectedQuantityOption.priceModifier > 0) {
-    finalPrice += selectedQuantityOption.priceModifier;
+    baseItemPrice += selectedQuantityOption.priceModifier;
+  }
+
+  const totalSelectedCustomItems = Object.values(customFlavorQuantities).reduce((a, b) => a + b, 0);
+
+  let finalPrice = baseItemPrice;
+  if (product.isCustomAssortment && totalSelectedCustomItems > 0) {
+    finalPrice = baseItemPrice * totalSelectedCustomItems;
   }
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +82,11 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   };
 
   const handleAddToCart = () => {
+    if (product.isCustomAssortment && totalSelectedCustomItems === 0) {
+      alert("Please select at least one item for your custom package.");
+      return;
+    }
+
     let finalFlavor = selectedFlavor?.name;
     if (product.isCustomAssortment) {
       const selections = Object.entries(customFlavorQuantities)
@@ -143,7 +155,12 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         <div className={styles.titleArea}>
           <span className={styles.category}>{product.categories?.map((c: any) => c.name).join(', ') || "Bakery"}</span>
           <h1 className={styles.title}>{product.name}</h1>
-          <p className={styles.price}>£{finalPrice.toFixed(2)}</p>
+          <p className={styles.price}>
+            £{finalPrice.toFixed(2)}
+            {product.isCustomAssortment && totalSelectedCustomItems === 0 && (
+              <span style={{ fontSize: "1rem", color: "#666", fontWeight: "normal", marginLeft: "8px" }}>/ piece</span>
+            )}
+          </p>
           {product.isPickupAvailable && (
             <div style={{ marginTop: "0.5rem" }}>
               <button 
