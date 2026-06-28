@@ -174,6 +174,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                     </td>
                     <td style={{ padding: "1.2rem 1.5rem", textAlign: "right" }}>
                       <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                        <Link href={`/shop/${product.slug}`} target="_blank" style={{ padding: "0.4rem 1rem", background: "var(--color-background-glass, #f0fdfa)", border: "1px solid var(--color-border-glass, #ccfbf1)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "var(--color-primary, #0f766e)" }}>View</Link>
                         <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "var(--color-background-glass, #f8fafc)", border: "1px solid var(--color-border-glass, #e2e8f0)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "var(--color-text-main, #334155)" }}>Edit</Link>
                         <form action={deleteProduct.bind(null, product.id)}>
                           <button type="submit" style={{ padding: "0.4rem 1rem", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Delete</button>

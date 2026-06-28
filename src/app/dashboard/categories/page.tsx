@@ -109,6 +109,9 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
                   </td>
                   <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                      <Link href={`/shop?category=${cat.slug}`} target="_blank" style={{ padding: "0.35rem 0.9rem", background: "var(--color-background-glass, #f0fdfa)", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "var(--color-primary, #0f766e)" }}>
+                        View
+                      </Link>
                       <Link href={`/dashboard/categories/${cat.id}/edit`} style={{ padding: "0.35rem 0.9rem", background: "#f0f0f0", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "#333" }}>
                         Edit
                       </Link>
