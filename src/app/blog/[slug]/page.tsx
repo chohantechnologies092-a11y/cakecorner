@@ -2,7 +2,8 @@ import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
-import 'react-quill-new/dist/quill.snow.css'; // For basic styling of the HTML
+import 'react-quill-new/dist/quill.snow.css';
+import styles from '../Blog.module.css';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -68,38 +69,36 @@ export default async function BlogPostPage(props: Props) {
   };
 
   return (
-    <article style={{ padding: '4rem 1.5rem' }}>
+    <article className={styles.postContainer}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <Link href="/blog" style={{ color: '#4abeb3', textDecoration: 'none', marginBottom: '2rem', display: 'inline-block' }}>
+      <div className={styles.postHeader}>
+        <Link href="/blog" className={styles.postBackLink}>
           &larr; Back to all posts
         </Link>
 
-        <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '3.5rem', fontFamily: 'var(--font-heading)', color: '#2c2c2c', marginBottom: '1rem', lineHeight: '1.2' }}>
-            {post.title}
-          </h1>
-          <div style={{ color: '#666', fontSize: '1rem' }}>
-            By {post.author.name} &bull; {post.publishedAt?.toLocaleDateString()}
-          </div>
-        </header>
+        <h1 className={styles.postTitle}>
+          {post.title}
+        </h1>
+        <div className={styles.postMeta}>
+          By {post.author.name} &bull; {post.publishedAt?.toLocaleDateString()}
+        </div>
       </div>
 
       {post.coverImage && (
-        <div style={{ maxWidth: '1200px', margin: '0 auto 3rem auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-          <img src={post.coverImage} alt={post.title} style={{ width: '100%', height: '600px', objectFit: 'cover', display: 'block' }} />
+        <div className={styles.postImageContainer}>
+          <img src={post.coverImage} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </div>
       )}
 
       {/* Render the Rich Text HTML securely */}
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div className={styles.postContent}>
         <div 
           className="ql-editor" // Apply Quill's default styling class
-          style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333' }}
+          style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', padding: 0 }}
           dangerouslySetInnerHTML={{ __html: post.content }} 
         />
       </div>
