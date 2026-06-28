@@ -31,6 +31,7 @@ interface ProductFormProps {
     isVisible: boolean;
     isPhotoCake: boolean;
     isCustomAssortment: boolean;
+    customPiecePrice: number;
     isPickupAvailable: boolean;
     baseSize?: string | null;
     imageUrl?: string | null;
@@ -56,6 +57,8 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const [featuredImage, setFeaturedImage] = useState(initialData?.imageUrl || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [categoryIds, setCategoryIds] = useState<string[]>(initialData?.categories?.map(c => c.id) || []);
+  const [isCustomAssortment, setIsCustomAssortment] = useState(initialData?.isCustomAssortment || false);
+  const [customPiecePrice, setCustomPiecePrice] = useState(initialData?.customPiecePrice || 0);
   const quillRef = useRef<any>(null);
 
   const imageHandler = () => {
@@ -171,7 +174,8 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       formData.append("featuredImage", featuredImage);
       formData.append("description", description);
       formData.append("categoryIds", JSON.stringify(categoryIds));
-      formData.append("isCustomAssortment", (document.getElementById('isCustomAssortment') as HTMLInputElement)?.checked ? "true" : "false");
+      formData.append("isCustomAssortment", isCustomAssortment.toString());
+      formData.append("customPiecePrice", customPiecePrice.toString());
 
       try {
         if (initialData) {
@@ -421,7 +425,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       <hr style={{ border: "none", borderTop: "1px solid #eee" }} />
 
       {/* Visibility */}
-      <div style={{ display: "flex", gap: "2rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
         <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
           <input type="checkbox" name="isFeatured" value="true" defaultChecked={initialData?.isFeatured} style={{ width: "1.1rem", height: "1.1rem" }} />
           <span style={{ fontSize: "0.9rem" }}>⭐ Feature on homepage</span>
@@ -435,9 +439,25 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
           <label htmlFor="isPhotoCake" style={{ fontWeight: "600", color: "var(--color-primary)", cursor: "pointer" }}>📸 Enable Photo Cake Upload Option</label>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
-          <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" value="true" defaultChecked={initialData?.isCustomAssortment} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f" }} />
-          <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
+            <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f" }} />
+            <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
+            </div>
+            
+            {isCustomAssortment && (
+            <div style={{ marginTop: "0.5rem", padding: "1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
+                <label style={{ fontWeight: "600", fontSize: "0.9rem", color: "#d81b60" }}>Per Piece Price (£)</label>
+                <input
+                type="number"
+                step="0.01"
+                value={customPiecePrice}
+                onChange={(e) => setCustomPiecePrice(parseFloat(e.target.value) || 0)}
+                style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid #ddd", marginTop: "0.5rem" }}
+                placeholder="e.g. 2.50"
+                />
+            </div>
+            )}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fff5e6", padding: "1rem", borderRadius: "8px" }}>

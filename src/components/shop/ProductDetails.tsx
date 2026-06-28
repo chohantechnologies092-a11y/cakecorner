@@ -64,7 +64,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
     }
   } else if (purchaseMode === 'custom') {
     if (totalSelectedCustomItems > 0) {
-      finalPrice = product.price * totalSelectedCustomItems;
+      finalPrice = (product.customPiecePrice || product.price) * totalSelectedCustomItems;
     }
   }
 

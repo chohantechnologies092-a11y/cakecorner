@@ -38,6 +38,7 @@ model Product {
   isVisible   Boolean         @default(true)
   isPhotoCake Boolean         @default(false)
   isCustomAssortment Boolean  @default(false)
+  customPiecePrice   Float?   @default(0)
   sortOrder   Int             @default(0)
   categories  Category[]
   createdAt   DateTime        @default(now())
