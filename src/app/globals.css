@@ -172,14 +172,57 @@ button {
   }
 
   .shop-grid {
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
     gap: 1rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 0 1rem;
+  }
+  
+  .shop-grid > * {
+    scroll-snap-align: start;
+    flex: 0 0 calc(85% - 1rem); /* Show 85% of a card so next one peeks in */
+    max-width: calc(85% - 1rem);
+  }
+  
+  .shop-grid::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for cleaner UI */
   }
 }
 
 @media (max-width: 480px) {
-  .shop-grid {
-    grid-template-columns: 1fr;
+  .shop-grid > * {
+    flex: 0 0 calc(90% - 1rem);
+    max-width: calc(90% - 1rem);
+  }
+}
+
+/* Utilities */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+  background: var(--color-background-glass, white);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.hidden-mobile {
+  display: block;
+}
+.hidden-desktop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .hidden-desktop {
+    display: block !important;
   }
 }
 

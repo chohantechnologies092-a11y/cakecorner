@@ -64,8 +64,8 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
           </Link>
         </div>
       ) : (
-        <div style={{ background: "white", borderRadius: "var(--border-radius-sm)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+        <div className="table-responsive" style={{ background: "white", borderRadius: "var(--border-radius-sm)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", minWidth: "700px" }}>
             <thead>
               <tr style={{ background: "#f9f9f9", borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#888" }}>Category</th>
@@ -112,7 +112,7 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
                       <Link href={`/dashboard/categories/${cat.id}/edit`} style={{ padding: "0.35rem 0.9rem", background: "#f0f0f0", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "#333" }}>
                         Edit
                       </Link>
-                      <form action={async () => { "use server"; await deleteCategory(cat.id); }}>
+                      <form action={deleteCategory.bind(null, cat.id)}>
                         <button type="submit" style={{ padding: "0.35rem 0.9rem", background: "#fff0f0", color: "#d32f2f", borderRadius: "6px", fontSize: "0.85rem", cursor: "pointer" }}>
                           Delete
                         </button>

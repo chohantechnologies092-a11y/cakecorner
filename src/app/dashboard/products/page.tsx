@@ -113,76 +113,78 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             <Link href="/dashboard/products/new" style={{ padding: "0.75rem 1.5rem", background: "var(--color-primary)", color: "white", borderRadius: "var(--border-radius-sm)", textDecoration: "none" }}>Add First Product</Link>
           </div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead>
-              <tr style={{ background: "var(--color-background-alt, #f9f9f9)", borderBottom: "2px solid var(--color-border-glass, #eee)" }}>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Product</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Category</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Price</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Featured</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Visible</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888", textAlign: "right" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product.id} className={styles.tableRow} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)" }}>
-                  <td style={{ padding: "1.2rem 1.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                      {product.imageUrl ? (
-                        <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-                          <Image src={product.imageUrl} alt={product.name} fill sizes="56px" style={{ objectFit: "cover" }} />
-                        </div>
-                      ) : (
-                        <div style={{ width: "56px", height: "56px", background: "linear-gradient(135deg, #f0faf9, #e0f2f1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>🎂</div>
-                      )}
-                      <div>
-                        <p style={{ fontWeight: "700", fontSize: "1.05rem", color: "#1e293b", marginBottom: "0.2rem" }}>{product.name}</p>
-                        <p style={{ fontSize: "0.8rem", color: "#64748b" }}>{stripHtml(product.description).slice(0, 50)}...</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: "1.2rem 1.5rem" }}>
-                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                      {product.categories.map((cat: any) => (
-                        <span key={cat.id} style={{ background: "#f1f5f9", color: "#475569", padding: "0.3rem 0.7rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600", whiteSpace: "nowrap", border: "1px solid #e2e8f0" }}>
-                          {cat.name}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td style={{ padding: "1.2rem 1.5rem", fontWeight: "700", color: "#0f172a", fontSize: "1.05rem" }}>£{product.price.toFixed(2)}</td>
-                  <td style={{ padding: "1.2rem 1.5rem" }}>
-                    {product.isFeatured ? (
-                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fffbeb", color: "#d97706", width: "28px", height: "28px", borderRadius: "50%", fontSize: "0.9rem", border: "1px solid #fde68a" }}>⭐</span>
-                    ) : (
-                      <span style={{ color: "#cbd5e1" }}>—</span>
-                    )}
-                  </td>
-                  <td style={{ padding: "1.2rem 1.5rem" }}>
-                    <form action={toggleProductVisibility.bind(null, product.id, !product.isVisible)} style={{ margin: 0 }}>
-                      <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, outline: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <div style={{ width: "40px", height: "22px", background: product.isVisible ? "var(--color-primary)" : "#cbd5e1", borderRadius: "20px", position: "relative", transition: "all 0.3s ease", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }}>
-                          <div style={{ width: "18px", height: "18px", background: "white", borderRadius: "50%", position: "absolute", top: "2px", left: product.isVisible ? "20px" : "2px", transition: "all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}></div>
-                        </div>
-                        <span style={{ fontSize: "0.85rem", fontWeight: "600", color: product.isVisible ? "var(--color-primary)" : "#64748b" }}>
-                          {product.isVisible ? "Active" : "Inactive"}
-                        </span>
-                      </button>
-                    </form>
-                  </td>
-                  <td style={{ padding: "1.2rem 1.5rem", textAlign: "right" }}>
-                    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                      <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "#334155" }}>Edit</Link>
-                      <form action={deleteProduct.bind(null, product.id)}>
-                        <button type="submit" style={{ padding: "0.4rem 1rem", background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Delete</button>
-                      </form>
-                    </div>
-                  </td>
+          <div className="table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", minWidth: "800px" }}>
+              <thead>
+                <tr style={{ background: "var(--color-background-alt, #f9f9f9)", borderBottom: "2px solid var(--color-border-glass, #eee)" }}>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Product</th>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Category</th>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Price</th>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Featured</th>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Visible</th>
+                  <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888", textAlign: "right" }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id} className={styles.tableRow} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)" }}>
+                    <td style={{ padding: "1.2rem 1.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                        {product.imageUrl ? (
+                          <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", flexShrink: 0 }}>
+                            <Image src={product.imageUrl} alt={product.name} fill sizes="56px" style={{ objectFit: "cover" }} />
+                          </div>
+                        ) : (
+                          <div style={{ width: "56px", height: "56px", flexShrink: 0, background: "linear-gradient(135deg, #f0faf9, #e0f2f1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>🎂</div>
+                        )}
+                        <div>
+                          <p style={{ fontWeight: "700", fontSize: "1.05rem", color: "var(--color-text-main, #1e293b)", marginBottom: "0.2rem" }}>{product.name}</p>
+                          <p style={{ fontSize: "0.8rem", color: "var(--color-text-light, #64748b)" }}>{stripHtml(product.description).slice(0, 50)}...</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "1.2rem 1.5rem" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                        {product.categories.map((cat: any) => (
+                          <span key={cat.id} style={{ background: "var(--color-background-alt, #f1f5f9)", color: "var(--color-text-main, #475569)", padding: "0.3rem 0.7rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600", whiteSpace: "nowrap", border: "1px solid var(--color-border-glass, #e2e8f0)" }}>
+                            {cat.name}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td style={{ padding: "1.2rem 1.5rem", fontWeight: "700", color: "var(--color-text-main, #0f172a)", fontSize: "1.05rem" }}>£{product.price.toFixed(2)}</td>
+                    <td style={{ padding: "1.2rem 1.5rem" }}>
+                      {product.isFeatured ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fffbeb", color: "#d97706", width: "28px", height: "28px", borderRadius: "50%", fontSize: "0.9rem", border: "1px solid #fde68a" }}>⭐</span>
+                      ) : (
+                        <span style={{ color: "#cbd5e1" }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "1.2rem 1.5rem" }}>
+                      <form action={toggleProductVisibility.bind(null, product.id, !product.isVisible)} style={{ margin: 0 }}>
+                        <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, outline: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <div style={{ width: "40px", height: "22px", background: product.isVisible ? "var(--color-primary)" : "var(--color-border, #cbd5e1)", borderRadius: "20px", position: "relative", transition: "all 0.3s ease", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }}>
+                            <div style={{ width: "18px", height: "18px", background: "white", borderRadius: "50%", position: "absolute", top: "2px", left: product.isVisible ? "20px" : "2px", transition: "all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}></div>
+                          </div>
+                          <span style={{ fontSize: "0.85rem", fontWeight: "600", color: product.isVisible ? "var(--color-primary)" : "var(--color-text-light, #64748b)" }}>
+                            {product.isVisible ? "Active" : "Inactive"}
+                          </span>
+                        </button>
+                      </form>
+                    </td>
+                    <td style={{ padding: "1.2rem 1.5rem", textAlign: "right" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                        <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "var(--color-background-glass, #f8fafc)", border: "1px solid var(--color-border-glass, #e2e8f0)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "var(--color-text-main, #334155)" }}>Edit</Link>
+                        <form action={deleteProduct.bind(null, product.id)}>
+                          <button type="submit" style={{ padding: "0.4rem 1rem", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Delete</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {totalPages > 1 && (
