@@ -458,7 +458,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
         <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-            <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f", cursor: "pointer" }} />
+            <input type="checkbox" name="isCustomAssortment" value="true" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f", cursor: "pointer" }} />
             <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
           </div>
 
