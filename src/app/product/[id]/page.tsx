@@ -39,6 +39,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       categories: true,
       sizes: true,
       flavors: true,
+      tiers: { include: { flavors: true } },
       quantityOptions: true,
       images: true,
     }

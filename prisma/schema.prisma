@@ -51,6 +51,7 @@ model Product {
 
   sizes           ProductSize[]
   flavors         ProductFlavor[]
+  tiers           ProductTier[]
   quantityOptions ProductQuantityOption[]
   images          ProductImage[]
   orderItems      OrderItem[]
@@ -85,6 +86,21 @@ model ProductImage {
   altText   String?
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductTier {
+  id        String  @id @default(cuid())
+  name      String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  flavors   ProductTierFlavor[]
+}
+
+model ProductTierFlavor {
+  id        String  @id @default(cuid())
+  name      String
+  tierId    String
+  tier      ProductTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
 }
 
 // ─── Order ───────────────────────────────────────────────────────────────────

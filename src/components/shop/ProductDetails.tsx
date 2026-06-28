@@ -26,6 +26,16 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   const [activeImage, setActiveImage] = useState(allImages[0] || "");
   const [selectedSize, setSelectedSize] = useState<any>(allSizes[0] || null);
   const [selectedFlavor, setSelectedFlavor] = useState<any>(product.flavors[0] || null);
+  const [selectedTierFlavors, setSelectedTierFlavors] = useState<Record<string, string>>(() => {
+    if (!product.tiers || product.tiers.length === 0) return {};
+    const initial: Record<string, string> = {};
+    product.tiers.forEach((tier: any) => {
+      if (tier.flavors && tier.flavors.length > 0) {
+        initial[tier.name] = tier.flavors[0].name;
+      }
+    });
+    return initial;
+  });
   const [selectedQuantityOption, setSelectedQuantityOption] = useState<any>(allQuantityOptions[0] || null);
   const [quantity, setQuantity] = useState(1);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -56,13 +66,18 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   };
 
   const handleAddToCart = () => {
+    let finalFlavor = selectedFlavor?.name;
+    if (product.tiers && product.tiers.length > 0) {
+      finalFlavor = product.tiers.map((t: any) => `${t.name}: ${selectedTierFlavors[t.name] || 'None'}`).join(' | ');
+    }
+
     addItem({
       productId: product.id,
       name: product.name,
       price: finalPrice,
       imageUrl: product.imageUrl,
       size: selectedSize?.name,
-      flavor: selectedFlavor?.name,
+      flavor: finalFlavor,
       quantityOption: selectedQuantityOption?.name,
       photoUrl: photoPreview || undefined,
     });
@@ -75,7 +90,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         price: finalPrice,
         imageUrl: product.imageUrl,
         size: selectedSize?.name,
-        flavor: selectedFlavor?.name,
+        flavor: finalFlavor,
         quantityOption: selectedQuantityOption?.name,
         photoUrl: photoPreview || undefined,
       });
@@ -148,14 +163,31 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
             <div className={styles.optionsGrid}>
               {allSizes.map((size: any) => (
                 <button key={size.id} onClick={() => setSelectedSize(size)} className={`${styles.optionBtn} ${selectedSize?.id === size.id ? styles.active : ''}`}>
-                  {size.name} {size.priceModifier > 0 && `(+£${size.priceModifier.toFixed(2)})`}
+                  {size.name}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {product.flavors.length > 0 && (
+        {product.tiers && product.tiers.length > 0 ? (
+          product.tiers.map((tier: any, idx: number) => (
+            <div key={idx} className={styles.selectionGroup}>
+              <label className={styles.selectionLabel}>Flavor for {tier.name}</label>
+              <div className={styles.optionsGrid}>
+                {tier.flavors.map((flavor: any) => (
+                  <button 
+                    key={flavor.id} 
+                    onClick={() => setSelectedTierFlavors(prev => ({ ...prev, [tier.name]: flavor.name }))} 
+                    className={`${styles.optionBtn} ${selectedTierFlavors[tier.name] === flavor.name ? styles.active : ''}`}
+                  >
+                    {flavor.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))
+        ) : product.flavors.length > 0 && (
           <div className={styles.selectionGroup}>
             <label className={styles.selectionLabel}>Select Flavor</label>
             <div className={styles.optionsGrid}>

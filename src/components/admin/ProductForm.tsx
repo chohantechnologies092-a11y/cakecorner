@@ -16,6 +16,8 @@ interface Size { id?: string; name: string; priceModifier: number; }
 interface Flavor { id?: string; name: string; }
 interface QuantityOption { id?: string; name: string; priceModifier: number; }
 interface Image { id?: string; url: string; altText?: string | null; }
+interface TierFlavor { id?: string; name: string; }
+interface Tier { id?: string; name: string; flavors: TierFlavor[]; }
 
 interface ProductFormProps {
   categories: Category[];
@@ -36,6 +38,7 @@ interface ProductFormProps {
     canonicalUrl?: string | null;
     sizes: Size[];
     flavors: Flavor[];
+    tiers?: Tier[];
     quantityOptions?: QuantityOption[];
     images: Image[];
   };
@@ -46,6 +49,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const [loading, setLoading] = useState(false);
   const [sizes, setSizes] = useState<Size[]>(initialData?.sizes || []);
   const [flavors, setFlavors] = useState<Flavor[]>(initialData?.flavors || []);
+  const [tiers, setTiers] = useState<Tier[]>(initialData?.tiers || []);
   const [quantityOptions, setQuantityOptions] = useState<QuantityOption[]>(initialData?.quantityOptions || []);
   const [images, setImages] = useState<Image[]>(initialData?.images || []);
   const [featuredImage, setFeaturedImage] = useState(initialData?.imageUrl || '');
@@ -115,6 +119,30 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   };
   const removeFlavor = (idx: number) => setFlavors(flavors.filter((_, i) => i !== idx));
 
+  const addTier = () => setTiers([...tiers, { name: "", flavors: [] }]);
+  const updateTierName = (idx: number, name: string) => {
+    const newTiers = [...tiers];
+    newTiers[idx].name = name;
+    setTiers(newTiers);
+  };
+  const removeTier = (idx: number) => setTiers(tiers.filter((_, i) => i !== idx));
+
+  const addTierFlavor = (tierIdx: number) => {
+    const newTiers = [...tiers];
+    newTiers[tierIdx].flavors.push({ name: "" });
+    setTiers(newTiers);
+  };
+  const updateTierFlavor = (tierIdx: number, fIdx: number, value: string) => {
+    const newTiers = [...tiers];
+    newTiers[tierIdx].flavors[fIdx].name = value;
+    setTiers(newTiers);
+  };
+  const removeTierFlavor = (tierIdx: number, fIdx: number) => {
+    const newTiers = [...tiers];
+    newTiers[tierIdx].flavors = newTiers[tierIdx].flavors.filter((_, i) => i !== fIdx);
+    setTiers(newTiers);
+  };
+
   const addQuantityOption = () => setQuantityOptions([...quantityOptions, { name: "", priceModifier: 0 }]);
   const updateQuantityOption = (idx: number, field: keyof QuantityOption, value: any) => {
     const newOpts = [...quantityOptions];
@@ -136,6 +164,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       setLoading(true);
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("flavors", JSON.stringify(flavors));
+      formData.append("tiers", JSON.stringify(tiers));
       formData.append("quantityOptions", JSON.stringify(quantityOptions));
       formData.append("images", JSON.stringify(images));
       formData.append("featuredImage", featuredImage);
@@ -271,6 +300,48 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         </div>
       </div>
       
+      {/* Tiered Cakes Configuration */}
+      <div style={{ marginTop: "1rem", background: "#fdf8fb", padding: "1.5rem", borderRadius: "12px", border: "1px solid #f8e5f0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <div>
+            <h3 style={{ fontSize: "1.2rem", margin: 0, color: "#d81b60" }}>Tiered Cakes Configuration</h3>
+            <p style={{ color: "#666", fontSize: "0.85rem", marginTop: "0.2rem" }}>Add specific tiers (e.g., Top Tier, Bottom Tier) and assign specific flavors to each.</p>
+          </div>
+          <button type="button" onClick={addTier} style={{ padding: "0.5rem 1rem", background: "#d81b60", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.85rem", fontWeight: "bold" }}>+ Add Tier</button>
+        </div>
+        {tiers.length === 0 ? <p style={{ color: "#888", fontSize: "0.9rem" }}>No tiers configured. (Leave empty if this is not a tiered cake).</p> : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            {tiers.map((tier, tIdx) => (
+              <div key={tIdx} style={{ background: "white", padding: "1rem", borderRadius: "8px", border: "1px solid #ddd" }}>
+                <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", alignItems: "center" }}>
+                  <input type="text" placeholder="Tier Name (e.g. Top Tier, 6 inch)" value={tier.name} onChange={(e) => updateTierName(tIdx, e.target.value)} required
+                    style={{ flex: 1, padding: "0.7rem", borderRadius: "6px", border: "1px solid #ccc", fontSize: "1rem", fontWeight: "bold" }} />
+                  <button type="button" onClick={() => removeTier(tIdx)} style={{ padding: "0.6rem 1rem", background: "#fff0f0", border: "1px solid #ffcdd2", color: "#d32f2f", borderRadius: "6px", cursor: "pointer", fontSize: "0.85rem" }}>Remove Tier</button>
+                </div>
+                
+                <div style={{ paddingLeft: "1.5rem", borderLeft: "3px solid #f8e5f0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <h4 style={{ fontSize: "0.95rem", margin: 0 }}>Flavors for {tier.name || `Tier ${tIdx + 1}`}</h4>
+                    <button type="button" onClick={() => addTierFlavor(tIdx)} style={{ padding: "0.3rem 0.6rem", background: "#f0f0f0", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.75rem" }}>+ Add Flavor</button>
+                  </div>
+                  {tier.flavors.length === 0 ? <p style={{ color: "#888", fontSize: "0.8rem", margin: 0 }}>No flavors added. Please add at least one.</p> : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+                      {tier.flavors.map((flavor, fIdx) => (
+                        <div key={fIdx} style={{ display: "flex", gap: "0.5rem" }}>
+                          <input type="text" placeholder="Flavor Name (e.g. Red Velvet)" value={flavor.name} onChange={(e) => updateTierFlavor(tIdx, fIdx, e.target.value)} required
+                            style={{ flex: 1, padding: "0.5rem", borderRadius: "6px", border: "1px solid #ddd", fontSize: "0.85rem" }} />
+                          <button type="button" onClick={() => removeTierFlavor(tIdx, fIdx)} style={{ background: "none", border: "none", color: "#d32f2f", cursor: "pointer", padding: "0 0.5rem" }}>✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Custom Quantities */}
       <div style={{ marginTop: "1rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>

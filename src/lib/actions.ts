@@ -122,6 +122,7 @@ export async function createProduct(formData: FormData) {
   
   const sizesStr = formData.get("sizes") as string;
   const flavorsStr = formData.get("flavors") as string;
+  const tiersStr = formData.get("tiers") as string;
   const imagesStr = formData.get("images") as string;
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
@@ -134,6 +135,7 @@ export async function createProduct(formData: FormData) {
 
   const sizes = sizesStr ? JSON.parse(sizesStr) : [];
   const flavors = flavorsStr ? JSON.parse(flavorsStr) : [];
+  const tiers = tiersStr ? JSON.parse(tiersStr) : [];
   const images = imagesStr ? JSON.parse(imagesStr) : [];
   
   const quantityOptionsStr = formData.get("quantityOptions") as string;
@@ -160,6 +162,12 @@ export async function createProduct(formData: FormData) {
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      tiers: { 
+        create: tiers.map((t: any) => ({ 
+          name: t.name, 
+          flavors: { create: t.flavors.map((f: any) => ({ name: f.name })) } 
+        })) 
+      },
       quantityOptions: { create: quantityOptions.map((q: any) => ({ name: q.name, priceModifier: q.priceModifier })) },
       images: { create: images.map((i: any) => ({ url: i.url, altText: i.altText })) },
     },
@@ -181,6 +189,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
   const sizesStr = formData.get("sizes") as string;
   const flavorsStr = formData.get("flavors") as string;
+  const tiersStr = formData.get("tiers") as string;
   const imagesStr = formData.get("images") as string;
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
@@ -193,6 +202,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
   const sizes = sizesStr ? JSON.parse(sizesStr) : [];
   const flavors = flavorsStr ? JSON.parse(flavorsStr) : [];
+  const tiers = tiersStr ? JSON.parse(tiersStr) : [];
   const images = imagesStr ? JSON.parse(imagesStr) : [];
   
   const quantityOptionsStr = formData.get("quantityOptions") as string;
@@ -206,6 +216,8 @@ export async function updateProduct(id: string, formData: FormData) {
   // For updates, we delete existing relations and recreate them for simplicity
   await prisma.productSize.deleteMany({ where: { productId: id } });
   await prisma.productFlavor.deleteMany({ where: { productId: id } });
+  await prisma.productTierFlavor.deleteMany({ where: { tier: { productId: id } } });
+  await prisma.productTier.deleteMany({ where: { productId: id } });
   await prisma.productQuantityOption.deleteMany({ where: { productId: id } });
   await prisma.productImage.deleteMany({ where: { productId: id } });
 
@@ -226,6 +238,12 @@ export async function updateProduct(id: string, formData: FormData) {
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      tiers: { 
+        create: tiers.map((t: any) => ({ 
+          name: t.name, 
+          flavors: { create: t.flavors.map((f: any) => ({ name: f.name })) } 
+        })) 
+      },
       quantityOptions: { create: quantityOptions.map((q: any) => ({ name: q.name, priceModifier: q.priceModifier })) },
       images: { create: images.map((i: any) => ({ url: i.url, altText: i.altText })) },
     },
