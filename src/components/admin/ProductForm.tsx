@@ -35,7 +35,7 @@ interface ProductFormProps {
     isVisible: boolean;
     isPhotoCake: boolean;
     isCustomAssortment: boolean;
-    customPiecePrice: number;
+    customPiecePrice: number | null;
     isPickupAvailable: boolean;
     baseSize?: string | null;
     imageUrl?: string | null;
