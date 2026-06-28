@@ -238,3 +238,15 @@ model LocationAnalytics {
 
   @@unique([country, city])
 }
+
+// --- Leads -------------------------------------------------------------------
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

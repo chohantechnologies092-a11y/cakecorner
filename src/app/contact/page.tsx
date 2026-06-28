@@ -1,5 +1,6 @@
 import styles from "./Contact.module.css";
 import type { Metadata } from "next";
+import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us | Cake Corner",
@@ -59,29 +60,7 @@ export default function ContactPage() {
           <h2 className={styles.formTitle}>Send a Message</h2>
           <p className={styles.formDesc}>We will get back to you as soon as possible.</p>
           
-          <form action="#" method="POST">
-            <div className={styles.formGroup}>
-              <label htmlFor="name" className={styles.label}>Full Name</label>
-              <input type="text" id="name" name="name" className={styles.input} placeholder="John Doe" required />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="email" className={styles.label}>Email Address</label>
-              <input type="email" id="email" name="email" className={styles.input} placeholder="john@example.com" required />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="subject" className={styles.label}>Subject</label>
-              <input type="text" id="subject" name="subject" className={styles.input} placeholder="Custom Cake Inquiry" required />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="message" className={styles.label}>Message</label>
-              <textarea id="message" name="message" className={styles.textarea} placeholder="How can we help you?" required></textarea>
-            </div>
-            
-            <button type="submit" className={styles.submitBtn}>Send Message</button>
-          </form>
+          <ContactForm />
         </section>
       </div>
 

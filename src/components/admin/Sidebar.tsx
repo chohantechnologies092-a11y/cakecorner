@@ -9,6 +9,7 @@ import styles from "@/app/dashboard/layout.module.css";
 
 const ALL_NAV_ITEMS = [
   { href: "/dashboard", label: "📊 Overview", exact: true, roles: ["SUPER_ADMIN", "ADMIN", "EMPLOYEE"] },
+  { href: "/dashboard/leads", label: "💬 Leads", roles: ["SUPER_ADMIN", "ADMIN", "EMPLOYEE"] },
   { href: "/dashboard/analytics", label: "📈 Analytics", roles: ["SUPER_ADMIN", "ADMIN", "EMPLOYEE"] },
   { href: "/dashboard/homepage", label: "🏠 Homepage Layout", roles: ["SUPER_ADMIN", "ADMIN"] },
   { href: "/dashboard/mega-menu", label: "🗂️ Mega Menu", roles: ["SUPER_ADMIN", "ADMIN"] },
