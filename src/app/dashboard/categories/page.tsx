@@ -3,9 +3,10 @@ import { deleteCategory } from "@/lib/actions";
 import Link from "next/link";
 import styles from "../page.module.css";
 import DashboardSearch from "@/components/admin/DashboardSearch";
+import DashboardSortFilter from "@/components/admin/DashboardSortFilter";
 
-export default async function CategoriesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q } = await searchParams;
+export default async function CategoriesPage({ searchParams }: { searchParams: Promise<{ q?: string, sort?: string }> }) {
+  const { q, sort } = await searchParams;
 
   const whereClause = q ? {
     OR: [
@@ -14,9 +15,14 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
     ]
   } : {};
 
+  let orderByClause: any = { sortOrder: "asc" };
+  if (sort === "name_asc") orderByClause = { name: "asc" };
+  else if (sort === "name_desc") orderByClause = { name: "desc" };
+  else if (sort === "recent") orderByClause = { updatedAt: "desc" };
+
   const categories = await prisma.category.findMany({
     where: whereClause,
-    orderBy: { sortOrder: "asc" },
+    orderBy: orderByClause,
     include: { _count: { select: { products: true } } },
   });
 
@@ -29,7 +35,15 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
             {categories.length} categories
           </p>
         </div>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <DashboardSortFilter 
+            options={[
+              { label: "Manual Order", value: "" },
+              { label: "Recent Edits", value: "recent" },
+              { label: "Name: A to Z", value: "name_asc" },
+              { label: "Name: Z to A", value: "name_desc" }
+            ]} 
+          />
           <DashboardSearch placeholder="Search categories..." />
           <Link
             href="/dashboard/categories/new"

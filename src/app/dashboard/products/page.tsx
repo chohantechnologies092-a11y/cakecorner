@@ -6,10 +6,11 @@ import styles from "../page.module.css";
 import CsvImportModal from "@/components/admin/CsvImportModal";
 import DashboardSearch from "@/components/admin/DashboardSearch";
 import DashboardCategoryFilter from "@/components/admin/DashboardCategoryFilter";
+import DashboardSortFilter from "@/components/admin/DashboardSortFilter";
 import { stripHtml } from "@/lib/utils";
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string, category?: string }> }) {
-  const { page: pageStr, q, category: categoryId } = await searchParams;
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ page?: string, q?: string, category?: string, sort?: string }> }) {
+  const { page: pageStr, q, category: categoryId, sort } = await searchParams;
   const currentPage = pageStr ? parseInt(pageStr, 10) : 1;
   const pageSize = 20;
 
@@ -26,10 +27,17 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     whereClause.categories = { some: { id: categoryId } };
   }
 
+  let orderByClause: any = { createdAt: "desc" };
+  if (sort === "name_asc") orderByClause = { name: "asc" };
+  else if (sort === "name_desc") orderByClause = { name: "desc" };
+  else if (sort === "price_asc") orderByClause = { price: "asc" };
+  else if (sort === "price_desc") orderByClause = { price: "desc" };
+  else if (sort === "recent") orderByClause = { updatedAt: "desc" };
+
   const [products, totalProducts, categories] = await Promise.all([
     prisma.product.findMany({
       where: whereClause,
-      orderBy: { createdAt: "desc" },
+      orderBy: orderByClause,
       include: { categories: true },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
@@ -43,6 +51,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const searchParamsString = new URLSearchParams({
     ...(q && { q }),
     ...(categoryId && { category: categoryId }),
+    ...(sort && { sort }),
   }).toString();
   
   const createPageUrl = (page: number) => {
@@ -59,6 +68,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap", flex: "2 1 auto", justifyContent: "flex-end" }}>
           <div style={{ flex: "0 1 200px" }}>
             <DashboardCategoryFilter categories={categories} />
+          </div>
+          <div style={{ flex: "0 1 180px" }}>
+            <DashboardSortFilter 
+              options={[
+                { label: "Newest First", value: "" },
+                { label: "Recent Edits", value: "recent" },
+                { label: "Name: A to Z", value: "name_asc" },
+                { label: "Name: Z to A", value: "name_desc" },
+                { label: "Price: Low to High", value: "price_asc" },
+                { label: "Price: High to Low", value: "price_desc" }
+              ]} 
+            />
           </div>
           <div style={{ flex: "1 1 250px", maxWidth: "400px" }}>
             <DashboardSearch placeholder="Search products..." />
