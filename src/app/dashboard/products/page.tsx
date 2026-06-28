@@ -126,7 +126,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f8fcfb"} onMouseOut={(e) => e.currentTarget.style.background = "transparent"}>
+                <tr key={product.id} className={styles.tableRow} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)" }}>
                   <td style={{ padding: "1.2rem 1.5rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                       {product.imageUrl ? (
@@ -160,7 +160,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                     )}
                   </td>
                   <td style={{ padding: "1.2rem 1.5rem" }}>
-                    <form action={async () => { "use server"; await toggleProductVisibility(product.id, !product.isVisible); }} style={{ margin: 0 }}>
+                    <form action={toggleProductVisibility.bind(null, product.id, !product.isVisible)} style={{ margin: 0 }}>
                       <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, outline: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <div style={{ width: "40px", height: "22px", background: product.isVisible ? "var(--color-primary)" : "#cbd5e1", borderRadius: "20px", position: "relative", transition: "all 0.3s ease", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }}>
                           <div style={{ width: "18px", height: "18px", background: "white", borderRadius: "50%", position: "absolute", top: "2px", left: product.isVisible ? "20px" : "2px", transition: "all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}></div>
@@ -173,9 +173,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   </td>
                   <td style={{ padding: "1.2rem 1.5rem", textAlign: "right" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                      <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "#334155", transition: "all 0.2s" }} onMouseOver={(e) => { e.currentTarget.style.background = "#e2e8f0"; e.currentTarget.style.borderColor = "#cbd5e1"; }} onMouseOut={(e) => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>Edit</Link>
-                      <form action={async () => { "use server"; await deleteProduct(product.id); }}>
-                        <button type="submit" style={{ padding: "0.4rem 1rem", background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={(e) => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.borderColor = "#fca5a5"; }} onMouseOut={(e) => { e.currentTarget.style.background = "#fef2f2"; e.currentTarget.style.borderColor = "#fecaca"; }}>Delete</button>
+                      <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "#334155" }}>Edit</Link>
+                      <form action={deleteProduct.bind(null, product.id)}>
+                        <button type="submit" style={{ padding: "0.4rem 1rem", background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Delete</button>
                       </form>
                     </div>
                   </td>
