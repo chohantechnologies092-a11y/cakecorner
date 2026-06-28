@@ -6,7 +6,7 @@
 .headerImageContainer {
   position: relative;
   width: 100%;
-  height: 350px;
+  height: 450px;
   overflow: hidden;
   margin-bottom: -3rem;
 }
@@ -27,7 +27,7 @@
   max-width: 800px;
   margin: 0 auto 4rem;
   text-align: center;
-  padding-top: 4rem;
+  padding-top: 9rem;
 }
 
 .heroTitle {
