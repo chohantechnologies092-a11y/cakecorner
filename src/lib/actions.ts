@@ -163,7 +163,7 @@ export async function createProduct(formData: FormData) {
       metaTitle,
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
-      flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      flavors: { create: flavors.map((f: any) => ({ name: f.name, priceModifier: f.priceModifier || 0 })) },
       tiers: { 
         create: tiers.map((t: any) => ({ 
           name: t.name, 
@@ -242,7 +242,7 @@ export async function updateProduct(id: string, formData: FormData) {
       metaTitle,
       metaDescription,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
-      flavors: { create: flavors.map((f: any) => ({ name: f.name })) },
+      flavors: { create: flavors.map((f: any) => ({ name: f.name, priceModifier: f.priceModifier || 0 })) },
       tiers: { 
         create: tiers.map((t: any) => ({ 
           name: t.name, 

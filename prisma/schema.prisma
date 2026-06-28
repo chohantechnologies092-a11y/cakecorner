@@ -68,10 +68,11 @@ model ProductSize {
 }
 
 model ProductFlavor {
-  id        String  @id @default(cuid())
-  name      String
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id            String  @id @default(cuid())
+  name          String
+  priceModifier Float   @default(0)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductQuantityOption {

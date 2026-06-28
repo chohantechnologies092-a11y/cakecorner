@@ -62,9 +62,20 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
     if (selectedSize && selectedSize.priceModifier > 0) {
       finalPrice = selectedSize.priceModifier;
     }
+    if (selectedFlavor && selectedFlavor.priceModifier > 0) {
+      finalPrice = selectedFlavor.priceModifier;
+    }
   } else if (purchaseMode === 'custom') {
     if (totalSelectedCustomItems > 0) {
-      finalPrice = (product.customPiecePrice || product.price) * totalSelectedCustomItems;
+      let customTotalPrice = 0;
+      product.flavors.forEach((flavor: any) => {
+        const qty = customFlavorQuantities[flavor.name] || 0;
+        if (qty > 0) {
+          const unitPrice = flavor.priceModifier > 0 ? flavor.priceModifier : (product.customPiecePrice || product.price);
+          customTotalPrice += unitPrice * qty;
+        }
+      });
+      finalPrice = customTotalPrice;
     }
   }
 
@@ -245,7 +256,12 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
                 const qty = customFlavorQuantities[flavor.name] || 0;
                 return (
                   <div key={flavor.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.8rem 1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
-                    <span style={{ fontWeight: "bold", fontSize: "0.95rem" }}>{flavor.name}</span>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <span style={{ fontWeight: "bold", fontSize: "0.95rem" }}>{flavor.name}</span>
+                      {flavor.priceModifier > 0 && (
+                        <span style={{ fontSize: "0.8rem", color: "#d81b60" }}>£{flavor.priceModifier.toFixed(2)} / piece</span>
+                      )}
+                    </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                       <button onClick={() => updateCustomFlavorQuantity(flavor.name, -1)} style={{ background: "white", border: "1px solid #ddd", width: "30px", height: "30px", borderRadius: "50%", cursor: "pointer", fontWeight: "bold", color: "#d81b60" }}>-</button>
                       <span style={{ minWidth: "20px", textAlign: "center", fontWeight: "bold" }}>{qty}</span>
@@ -285,6 +301,11 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
               {product.flavors.map((flavor: any) => (
                 <button key={flavor.id} onClick={() => setSelectedFlavor(flavor)} className={`${styles.optionBtn} ${selectedFlavor?.id === flavor.id ? styles.active : ''}`}>
                   {flavor.name}
+                  {flavor.priceModifier > 0 && (
+                    <span style={{ display: "block", fontSize: "0.75rem", marginTop: "2px", opacity: 0.8 }}>
+                      £{flavor.priceModifier.toFixed(2)}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>

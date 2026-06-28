@@ -13,7 +13,11 @@ const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 interface Category { id: string; name: string; }
 interface Size { id?: string; name: string; priceModifier: number; }
-interface Flavor { id?: string; name: string; }
+interface Flavor {
+  id: string;
+  name: string;
+  priceModifier?: number;
+}
 interface QuantityOption { id?: string; name: string; priceModifier: number; }
 interface Image { id?: string; url: string; altText?: string | null; }
 interface TierFlavor { id?: string; name: string; }
@@ -81,7 +85,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         });
         if (!res.ok) throw new Error('Upload failed');
         const data = await res.json();
-        
+
         const quill = quillRef.current.getEditor();
         const range = quill.getSelection(true);
         quill.insertEmbed(range.index, 'image', data.url);
@@ -97,7 +101,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       container: [
         [{ 'header': [1, 2, 3, false] }],
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         ['link', 'image'],
         ['clean']
       ],
@@ -115,11 +119,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   };
   const removeSize = (idx: number) => setSizes(sizes.filter((_, i) => i !== idx));
 
-  const addFlavor = () => setFlavors([...flavors, { name: "" }]);
-  const updateFlavor = (idx: number, value: string) => {
-    const newFlavors = [...flavors];
-    newFlavors[idx].name = value;
-    setFlavors(newFlavors);
+  const addFlavor = () => setFlavors([...flavors, { id: Date.now().toString(), name: '', priceModifier: 0 }]);
+  const updateFlavor = (index: number, field: keyof Flavor, value: any) => {
+    const updated = [...flavors];
+    updated[index] = { ...updated[index], [field]: value };
+    setFlavors(updated);
   };
   const removeFlavor = (idx: number) => setFlavors(flavors.filter((_, i) => i !== idx));
 
@@ -199,7 +203,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Base Price ($) *</label>
+          <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Base Price (£) *</label>
           <input type="number" name="price" step="0.01" min="0" required defaultValue={initialData?.price}
             style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
         </div>
@@ -216,8 +220,8 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
           <div style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd", background: "white", display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "200px", overflowY: "auto" }}>
             {categories.map((cat) => (
               <label key={cat.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "0.9rem" }}>
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={categoryIds.includes(cat.id)}
                   onChange={(e) => {
                     if (e.target.checked) {
@@ -237,11 +241,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Featured Image (Main)</label>
-          <ImageUploadInput 
-            name="featuredImage" 
-            value={featuredImage} 
-            onChange={setFeaturedImage} 
-            placeholder="https://..." 
+          <ImageUploadInput
+            name="featuredImage"
+            value={featuredImage}
+            onChange={setFeaturedImage}
+            placeholder="https://..."
           />
         </div>
       </div>
@@ -249,12 +253,12 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Description *</label>
         <div style={{ background: 'white' }}>
-          <ReactQuill 
+          <ReactQuill
             // @ts-ignore
             ref={quillRef}
-            theme="snow" 
-            value={description} 
-            onChange={setDescription} 
+            theme="snow"
+            value={description}
+            onChange={setDescription}
             modules={modules}
             style={{ height: '250px', marginBottom: '50px' }}
           />
@@ -294,18 +298,20 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
           </div>
           {flavors.length === 0 ? <p style={{ color: "#888", fontSize: "0.9rem" }}>No flavors added.</p> : (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {flavors.map((flavor, i) => (
-                <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
-                  <input type="text" placeholder="Flavor (e.g. Vanilla)" value={flavor.name} onChange={(e) => updateFlavor(i, e.target.value)} required
-                    style={{ flex: 1, padding: "0.6rem", borderRadius: "6px", border: "1px solid #ddd", fontSize: "0.9rem" }} />
-                  <button type="button" onClick={() => removeFlavor(i)} style={{ background: "none", border: "none", color: "#d32f2f", cursor: "pointer", padding: "0 0.5rem" }}>✕</button>
-                </div>
-              ))}
+              {flavors.map((flavor, index) => (
+              <div key={flavor.id} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <input type="text" placeholder="Flavor Name (e.g. Vanilla)" value={flavor.name} onChange={(e) => updateFlavor(index, "name", e.target.value)}
+                  style={{ flex: 1, padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
+                <input type="number" step="0.01" placeholder="Price (£)" value={flavor.priceModifier || ''} onChange={(e) => updateFlavor(index, "priceModifier", parseFloat(e.target.value) || 0)}
+                  style={{ width: "100px", padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} title="Leave 0 to use base price" />
+                <button type="button" onClick={() => removeFlavor(index)} style={{ padding: "0.75rem 1rem", background: "#ffebee", border: "none", color: "#d32f2f", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+              </div>
+            ))}
             </div>
           )}
         </div>
       </div>
-      
+
       {/* Tiered Cakes Configuration */}
       <div style={{ marginTop: "1rem", background: "#fdf8fb", padding: "1.5rem", borderRadius: "12px", border: "1px solid #f8e5f0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -324,7 +330,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
                     style={{ flex: 1, padding: "0.7rem", borderRadius: "6px", border: "1px solid #ccc", fontSize: "1rem", fontWeight: "bold" }} />
                   <button type="button" onClick={() => removeTier(tIdx)} style={{ padding: "0.6rem 1rem", background: "#fff0f0", border: "1px solid #ffcdd2", color: "#d32f2f", borderRadius: "6px", cursor: "pointer", fontSize: "0.85rem" }}>Remove Tier</button>
                 </div>
-                
+
                 <div style={{ paddingLeft: "1.5rem", borderLeft: "3px solid #f8e5f0" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.95rem", margin: 0 }}>Flavors for {tier.name || `Tier ${tIdx + 1}`}</h4>
@@ -382,10 +388,10 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             {images.map((img, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", background: "#f9f9f9", padding: "1rem", borderRadius: "8px", position: "relative" }}>
                 <button type="button" onClick={() => removeImage(i)} style={{ position: "absolute", top: "0.5rem", right: "0.5rem", background: "white", border: "1px solid #eee", borderRadius: "50%", width: "24px", height: "24px", color: "#d32f2f", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-                <ImageUploadInput 
-                  name={`imageUrl_${i}`} 
-                  value={img.url} 
-                  onChange={(val) => updateImage(i, "url", val)} 
+                <ImageUploadInput
+                  name={`imageUrl_${i}`}
+                  value={img.url}
+                  onChange={(val) => updateImage(i, "url", val)}
                 />
                 <input type="text" placeholder="Alt Text (optional)" value={img.altText || ""} onChange={(e) => updateImage(i, "altText", e.target.value)}
                   style={{ padding: "0.6rem", borderRadius: "6px", border: "1px solid #ddd", fontSize: "0.9rem" }} />
@@ -400,12 +406,12 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       {/* SEO & AEO */}
       <fieldset style={{ border: '1px solid #ddd', padding: '1.5rem', borderRadius: '8px' }}>
         <legend style={{ fontWeight: 'bold', padding: '0 0.5rem', fontSize: '1.1rem' }}>SEO & AEO Optimization</legend>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
           <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Meta Title (Max 60 chars)</label>
-          <input 
-            name="metaTitle" 
-            type="text" 
+          <input
+            name="metaTitle"
+            type="text"
             defaultValue={initialData?.metaTitle || ""}
             style={{ padding: '0.8rem', border: '1px solid #ddd', borderRadius: '8px' }}
           />
@@ -413,8 +419,8 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Meta Description (Max 160 chars)</label>
-          <textarea 
-            name="metaDescription" 
+          <textarea
+            name="metaDescription"
             rows={3}
             defaultValue={initialData?.metaDescription || ""}
             style={{ padding: '0.8rem', border: '1px solid #ddd', borderRadius: '8px', resize: 'vertical' }}
@@ -440,24 +446,24 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
             <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f" }} />
             <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
-            </div>
-            
-            {isCustomAssortment && (
+          </div>
+
+          {isCustomAssortment && (
             <div style={{ marginTop: "0.5rem", padding: "1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
-                <label style={{ fontWeight: "600", fontSize: "0.9rem", color: "#d81b60" }}>Per Piece Price (£)</label>
-                <input
+              <label style={{ fontWeight: "600", fontSize: "0.9rem", color: "#d81b60" }}>Per Piece Price (£)</label>
+              <input
                 type="number"
                 step="0.01"
                 value={customPiecePrice}
                 onChange={(e) => setCustomPiecePrice(parseFloat(e.target.value) || 0)}
                 style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid #ddd", marginTop: "0.5rem" }}
                 placeholder="e.g. 2.50"
-                />
+              />
             </div>
-            )}
+          )}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fff5e6", padding: "1rem", borderRadius: "8px" }}>
