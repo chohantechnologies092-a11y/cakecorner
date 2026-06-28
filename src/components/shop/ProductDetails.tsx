@@ -41,8 +41,17 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
   const [showPickupModal, setShowPickupModal] = useState(false);
+  const [customFlavorQuantities, setCustomFlavorQuantities] = useState<Record<string, number>>({});
 
   const isPhotoCake = product.isPhotoCake === true;
+
+  const updateCustomFlavorQuantity = (flavorName: string, delta: number) => {
+    setCustomFlavorQuantities(prev => {
+      const current = prev[flavorName] || 0;
+      const next = Math.max(0, current + delta);
+      return { ...prev, [flavorName]: next };
+    });
+  };
 
   let finalPrice = selectedSize && selectedSize.priceModifier > 0 
     ? selectedSize.priceModifier 
@@ -67,7 +76,13 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
 
   const handleAddToCart = () => {
     let finalFlavor = selectedFlavor?.name;
-    if (product.tiers && product.tiers.length > 0) {
+    if (product.isCustomAssortment) {
+      const selections = Object.entries(customFlavorQuantities)
+        .filter(([_, qty]) => qty > 0)
+        .map(([name, qty]) => `${qty}x ${name}`)
+        .join(', ');
+      finalFlavor = selections || 'No Flavors Selected';
+    } else if (product.tiers && product.tiers.length > 0) {
       finalFlavor = product.tiers.map((t: any) => `${t.name}: ${selectedTierFlavors[t.name] || 'None'}`).join(' | ');
     }
 
@@ -170,7 +185,32 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
           </div>
         )}
 
-        {product.tiers && product.tiers.length > 0 ? (
+        {product.isCustomAssortment ? (
+          <div className={styles.selectionGroup}>
+            <label className={styles.selectionLabel}>Build Your Custom Package</label>
+            <p style={{ color: "#666", fontSize: "0.9rem", marginBottom: "1rem" }}>Select the quantities for each flavor below:</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              {product.flavors.map((flavor: any) => {
+                const qty = customFlavorQuantities[flavor.name] || 0;
+                return (
+                  <div key={flavor.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.8rem 1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
+                    <span style={{ fontWeight: "bold", fontSize: "0.95rem" }}>{flavor.name}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                      <button onClick={() => updateCustomFlavorQuantity(flavor.name, -1)} style={{ background: "white", border: "1px solid #ddd", width: "30px", height: "30px", borderRadius: "50%", cursor: "pointer", fontWeight: "bold", color: "#d81b60" }}>-</button>
+                      <span style={{ minWidth: "20px", textAlign: "center", fontWeight: "bold" }}>{qty}</span>
+                      <button onClick={() => updateCustomFlavorQuantity(flavor.name, 1)} style={{ background: "#d81b60", border: "none", width: "30px", height: "30px", borderRadius: "50%", cursor: "pointer", fontWeight: "bold", color: "white" }}>+</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {Object.values(customFlavorQuantities).reduce((a, b) => a + b, 0) > 0 && (
+              <div style={{ marginTop: "1rem", padding: "0.8rem", background: "#f0fdf4", color: "#166534", borderRadius: "8px", textAlign: "center", fontWeight: "bold", fontSize: "0.95rem", border: "1px solid #bbf7d0" }}>
+                Total Selected: {Object.values(customFlavorQuantities).reduce((a, b) => a + b, 0)} Items
+              </div>
+            )}
+          </div>
+        ) : product.tiers && product.tiers.length > 0 ? (
           product.tiers.map((tier: any, idx: number) => (
             <div key={idx} className={styles.selectionGroup}>
               <label className={styles.selectionLabel}>Flavor for {tier.name}</label>

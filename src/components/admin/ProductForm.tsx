@@ -30,6 +30,7 @@ interface ProductFormProps {
     isFeatured: boolean;
     isVisible: boolean;
     isPhotoCake: boolean;
+    isCustomAssortment: boolean;
     isPickupAvailable: boolean;
     baseSize?: string | null;
     imageUrl?: string | null;
@@ -170,6 +171,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       formData.append("featuredImage", featuredImage);
       formData.append("description", description);
       formData.append("categoryIds", JSON.stringify(categoryIds));
+      formData.append("isCustomAssortment", (document.getElementById('isCustomAssortment') as HTMLInputElement)?.checked ? "true" : "false");
 
       try {
         if (initialData) {
@@ -431,6 +433,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#f0faf9", padding: "1rem", borderRadius: "8px" }}>
           <input type="checkbox" name="isPhotoCake" id="isPhotoCake" value="true" defaultChecked={initialData?.isPhotoCake} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--color-primary)" }} />
           <label htmlFor="isPhotoCake" style={{ fontWeight: "600", color: "var(--color-primary)", cursor: "pointer" }}>📸 Enable Photo Cake Upload Option</label>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
+          <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" value="true" defaultChecked={initialData?.isCustomAssortment} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f" }} />
+          <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fff5e6", padding: "1rem", borderRadius: "8px" }}>

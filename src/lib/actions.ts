@@ -119,6 +119,7 @@ export async function createProduct(formData: FormData) {
   const isFeatured = formData.get("isFeatured") === "true";
   const isVisible = formData.get("isVisible") !== "false";
   const isPhotoCake = formData.get("isPhotoCake") === "true";
+  const isCustomAssortment = formData.get("isCustomAssortment") === "true";
   
   const sizesStr = formData.get("sizes") as string;
   const flavorsStr = formData.get("flavors") as string;
@@ -156,6 +157,7 @@ export async function createProduct(formData: FormData) {
       isFeatured,
       isVisible,
       isPhotoCake,
+      isCustomAssortment,
       isPickupAvailable: formData.get("isPickupAvailable") === "true",
       baseSize: formData.get("baseSize") as string || null,
       metaTitle,
@@ -186,6 +188,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const isFeatured = formData.get("isFeatured") === "true";
   const isVisible = formData.get("isVisible") !== "false";
   const isPhotoCake = formData.get("isPhotoCake") === "true";
+  const isCustomAssortment = formData.get("isCustomAssortment") === "true";
 
   const sizesStr = formData.get("sizes") as string;
   const flavorsStr = formData.get("flavors") as string;
@@ -232,6 +235,7 @@ export async function updateProduct(id: string, formData: FormData) {
       isFeatured,
       isVisible,
       isPhotoCake,
+      isCustomAssortment,
       isPickupAvailable: formData.get("isPickupAvailable") === "true",
       baseSize: formData.get("baseSize") as string || null,
       metaTitle,
