@@ -276,6 +276,13 @@ export async function toggleFeatured(id: string, isFeatured: boolean) {
   revalidatePath("/");
 }
 
+export async function toggleProductVisibility(id: string, isVisible: boolean) {
+  await prisma.product.update({ where: { id }, data: { isVisible } });
+  revalidatePath(`/product/${id}`);
+  revalidatePath("/dashboard/products");
+  revalidatePath("/");
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Orders
 // ─────────────────────────────────────────────────────────────────────────────

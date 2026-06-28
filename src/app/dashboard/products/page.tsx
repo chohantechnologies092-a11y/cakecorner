@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { deleteProduct } from "@/lib/actions";
+import { deleteProduct, toggleProductVisibility } from "@/lib/actions";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "../page.module.css";
@@ -126,45 +126,56 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)" }}>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <tr key={product.id} style={{ borderBottom: "1px solid var(--color-border-glass, #f0f0f0)", transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "#f8fcfb"} onMouseOut={(e) => e.currentTarget.style.background = "transparent"}>
+                  <td style={{ padding: "1.2rem 1.5rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                       {product.imageUrl ? (
-                        <div style={{ position: "relative", width: "48px", height: "48px", borderRadius: "8px", overflow: "hidden" }}>
-                          <Image src={product.imageUrl} alt={product.name} fill sizes="48px" style={{ objectFit: "cover" }} />
+                        <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+                          <Image src={product.imageUrl} alt={product.name} fill sizes="56px" style={{ objectFit: "cover" }} />
                         </div>
                       ) : (
-                        <div style={{ width: "48px", height: "48px", background: "#f0faf9", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem" }}>🎂</div>
+                        <div style={{ width: "56px", height: "56px", background: "linear-gradient(135deg, #f0faf9, #e0f2f1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>🎂</div>
                       )}
                       <div>
-                        <p style={{ fontWeight: "600" }}>{product.name}</p>
-                        <p style={{ fontSize: "0.75rem", color: "var(--color-text-light, #888)", marginTop: "0.1rem" }}>{stripHtml(product.description).slice(0, 50)}...</p>
+                        <p style={{ fontWeight: "700", fontSize: "1.05rem", color: "#1e293b", marginBottom: "0.2rem" }}>{product.name}</p>
+                        <p style={{ fontSize: "0.8rem", color: "#64748b" }}>{stripHtml(product.description).slice(0, 50)}...</p>
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                  <td style={{ padding: "1.2rem 1.5rem" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                       {product.categories.map((cat: any) => (
-                        <span key={cat.id} style={{ background: "#f0faf9", color: "var(--color-primary)", padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "500", whiteSpace: "nowrap" }}>
+                        <span key={cat.id} style={{ background: "#f1f5f9", color: "#475569", padding: "0.3rem 0.7rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600", whiteSpace: "nowrap", border: "1px solid #e2e8f0" }}>
                           {cat.name}
                         </span>
                       ))}
                     </div>
                   </td>
-                  <td style={{ padding: "1rem 1.5rem", fontWeight: "700" }}>£{product.price.toFixed(2)}</td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <span style={{ fontSize: "1.2rem" }}>{product.isFeatured ? "⭐" : "—"}</span>
+                  <td style={{ padding: "1.2rem 1.5rem", fontWeight: "700", color: "#0f172a", fontSize: "1.05rem" }}>£{product.price.toFixed(2)}</td>
+                  <td style={{ padding: "1.2rem 1.5rem" }}>
+                    {product.isFeatured ? (
+                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fffbeb", color: "#d97706", width: "28px", height: "28px", borderRadius: "50%", fontSize: "0.9rem", border: "1px solid #fde68a" }}>⭐</span>
+                    ) : (
+                      <span style={{ color: "#cbd5e1" }}>—</span>
+                    )}
                   </td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <span style={{ background: product.isVisible ? "#e6f7f5" : "#f5f5f5", color: product.isVisible ? "var(--color-primary)" : "#888", padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem" }}>
-                      {product.isVisible ? "Visible" : "Hidden"}
-                    </span>
+                  <td style={{ padding: "1.2rem 1.5rem" }}>
+                    <form action={async () => { "use server"; await toggleProductVisibility(product.id, !product.isVisible); }} style={{ margin: 0 }}>
+                      <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, outline: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <div style={{ width: "40px", height: "22px", background: product.isVisible ? "var(--color-primary)" : "#cbd5e1", borderRadius: "20px", position: "relative", transition: "all 0.3s ease", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }}>
+                          <div style={{ width: "18px", height: "18px", background: "white", borderRadius: "50%", position: "absolute", top: "2px", left: product.isVisible ? "20px" : "2px", transition: "all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}></div>
+                        </div>
+                        <span style={{ fontSize: "0.85rem", fontWeight: "600", color: product.isVisible ? "var(--color-primary)" : "#64748b" }}>
+                          {product.isVisible ? "Active" : "Inactive"}
+                        </span>
+                      </button>
+                    </form>
                   </td>
-                  <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
+                  <td style={{ padding: "1.2rem 1.5rem", textAlign: "right" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                      <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.35rem 0.9rem", background: "#f0f0f0", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "#333" }}>Edit</Link>
+                      <Link href={`/dashboard/products/${product.id}/edit`} style={{ padding: "0.4rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", textDecoration: "none", color: "#334155", transition: "all 0.2s" }} onMouseOver={(e) => { e.currentTarget.style.background = "#e2e8f0"; e.currentTarget.style.borderColor = "#cbd5e1"; }} onMouseOut={(e) => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>Edit</Link>
                       <form action={async () => { "use server"; await deleteProduct(product.id); }}>
-                        <button type="submit" style={{ padding: "0.35rem 0.9rem", background: "#fff0f0", color: "#d32f2f", borderRadius: "6px", fontSize: "0.85rem", cursor: "pointer" }}>Delete</button>
+                        <button type="submit" style={{ padding: "0.4rem 1rem", background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={(e) => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.borderColor = "#fca5a5"; }} onMouseOut={(e) => { e.currentTarget.style.background = "#fef2f2"; e.currentTarget.style.borderColor = "#fecaca"; }}>Delete</button>
                       </form>
                     </div>
                   </td>
