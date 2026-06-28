@@ -61,14 +61,14 @@ export default function Header({ navItems = [], categories = [] }: HeaderProps) 
     if (item.label.toLowerCase() === "cakes") {
       return (
         <div key={item.id} className={styles.navItemWrapper}
-          onMouseEnter={() => setMegaOpen(true)}
-          onMouseLeave={() => setMegaOpen(false)}>
+          onMouseEnter={() => { if (typeof window !== 'undefined' && window.innerWidth > 900) setMegaOpen(true); }}
+          onMouseLeave={() => { if (typeof window !== 'undefined' && window.innerWidth > 900) setMegaOpen(false); }}>
           <a 
             href={item.url} 
             className={styles.navLink} 
             onClick={(e) => {
               // On mobile, click toggles the mega menu instead of navigating right away
-              if (window.innerWidth <= 900) {
+              if (typeof window !== 'undefined' && window.innerWidth <= 900) {
                 e.preventDefault();
                 setMegaOpen(!megaOpen);
               }

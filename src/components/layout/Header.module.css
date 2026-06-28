@@ -104,6 +104,7 @@
 .navItemWrapper {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .navLink {
@@ -171,6 +172,9 @@
   padding: 1.5rem;
   width: max-content;
   max-width: 90vw;
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 1rem;
@@ -431,6 +435,8 @@
 
   .megaMenuDropdown {
     width: 100%;
+    max-height: none;
+    overflow-y: visible;
     grid-template-columns: repeat(2, 1fr);
     box-shadow: none;
     border: none;
