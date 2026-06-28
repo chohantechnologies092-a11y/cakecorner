@@ -1,5 +1,6 @@
 import styles from "./About.module.css";
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "About Us | Cake Corner",
@@ -8,20 +9,31 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className={styles.container}>
-      <div className={styles.hero}>
-        <h1 className={styles.heroTitle}>About Us — Cake Corner</h1>
-        <p className={styles.heroText}>
-          Welcome to Cake Corner, where every cake is made with passion, creativity, and a love for making life’s sweetest moments unforgettable.
-          <br /><br />
-          At Cake Corner, we believe that cakes are more than just desserts — they are a part of celebrations, memories, and special occasions. Whether it’s a birthday, wedding, anniversary, baby shower, or simply a treat for yourself, our goal is to create cakes that look beautiful and taste even better.
-        </p>
+    <>
+      <div className={styles.headerImageContainer}>
+        <Image 
+          src="/hero-bg.png" 
+          alt="Cake Corner Bakery" 
+          fill 
+          style={{ objectFit: "cover" }}
+          priority
+        />
+        <div className={styles.headerImageOverlay}></div>
+        <div className={styles.hero}>
+          <h1 className={styles.heroTitle}>About Us — Cake Corner</h1>
+          <p className={styles.heroText}>
+            Welcome to Cake Corner, where every cake is made with passion, creativity, and a love for making life’s sweetest moments unforgettable.
+          </p>
+        </div>
       </div>
-
-      <div className={styles.contentWrapper}>
+      
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Our Story</h2>
           <p className={styles.sectionText}>
+            At Cake Corner, we believe that cakes are more than just desserts — they are a part of celebrations, memories, and special occasions. Whether it’s a birthday, wedding, anniversary, baby shower, or simply a treat for yourself, our goal is to create cakes that look beautiful and taste even better.
+            <br /><br />
             Cake Corner was created with a simple idea: to offer freshly made, high-quality cakes that can be personalised for every customer. We understand that every celebration is unique, which is why we specialise in customised cakes designed to match your theme, style, and taste preferences.
             <br /><br />
             From elegant celebration cakes to delicious cake slices for everyday enjoyment, each order is prepared with attention to detail and premium ingredients.
@@ -96,5 +108,6 @@ export default function AboutPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

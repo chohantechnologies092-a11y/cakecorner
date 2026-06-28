@@ -1,5 +1,6 @@
 import styles from "./Contact.module.css";
 import type { Metadata } from "next";
+import Image from "next/image";
 import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
@@ -9,13 +10,25 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className={styles.container}>
-      <div className={styles.hero}>
-        <h1 className={styles.heroTitle}>Get in Touch</h1>
-        <p className={styles.heroText}>
-          Have a question about a custom order, or just want to say hi? We’d love to hear from you. Fill out the form below or reach out to us directly.
-        </p>
+    <>
+      <div className={styles.headerImageContainer}>
+        <Image 
+          src="/hero-bg.png" 
+          alt="Contact Cake Corner" 
+          fill 
+          style={{ objectFit: "cover" }}
+          priority
+        />
+        <div className={styles.headerImageOverlay}></div>
+        <div className={styles.hero}>
+          <h1 className={styles.heroTitle}>Get in Touch</h1>
+          <p className={styles.heroText}>
+            Have a question about a custom order, or just want to say hi? We’d love to hear from you. Fill out the form below or reach out to us directly.
+          </p>
+        </div>
       </div>
+
+      <div className={styles.container}>
 
       <div className={styles.contentWrapper}>
         {/* Contact Information */}
@@ -78,5 +91,6 @@ export default function ContactPage() {
         ></iframe>
       </div>
     </div>
+    </>
   );
 }
