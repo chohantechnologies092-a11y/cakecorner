@@ -1,6 +1,7 @@
 .container {
   min-height: 100vh;
   background: var(--color-background-alt, linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%));
+  padding: 5rem 1.5rem 4rem;
 }
 
 .headerImageContainer {
@@ -8,7 +9,7 @@
   width: 100%;
   height: 450px;
   overflow: hidden;
-  margin-bottom: -3rem;
+  margin-bottom: 0;
 }
 
 .headerImageOverlay {
