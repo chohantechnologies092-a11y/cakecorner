@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb",
     },
   },
-  output: "standalone",
+  output: process.env.NETLIFY ? undefined : "standalone",
 };
 
 export default nextConfig;
