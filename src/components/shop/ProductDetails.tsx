@@ -25,7 +25,8 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
 
   const [activeImage, setActiveImage] = useState(allImages[0] || "");
   const [selectedSize, setSelectedSize] = useState<any>(allSizes[0] || null);
-  const [selectedFlavor, setSelectedFlavor] = useState<any>(product.flavors[0] || null);
+  const activeFlavors = product.flavors?.filter((f: any) => f.isActive !== false) || [];
+  const [selectedFlavor, setSelectedFlavor] = useState<any>(activeFlavors[0] || null);
   const [selectedTierFlavors, setSelectedTierFlavors] = useState<Record<string, string>>(() => {
     if (!product.tiers || product.tiers.length === 0) return {};
     const initial: Record<string, string> = {};
@@ -68,7 +69,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   } else if (purchaseMode === 'custom') {
     if (totalSelectedCustomItems > 0) {
       let customTotalPrice = 0;
-      product.flavors.forEach((flavor: any) => {
+      activeFlavors.forEach((flavor: any) => {
         const qty = customFlavorQuantities[flavor.name] || 0;
         if (qty > 0) {
           const unitPrice = flavor.priceModifier > 0 ? flavor.priceModifier : (product.customPiecePrice || product.price);
@@ -252,7 +253,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
             <label className={styles.selectionLabel}>Build Your Custom Package</label>
             <p style={{ color: "#666", fontSize: "0.9rem", marginBottom: "1rem" }}>Select the quantities for each flavor below:</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-              {product.flavors.map((flavor: any) => {
+              {activeFlavors.map((flavor: any) => {
                 const qty = customFlavorQuantities[flavor.name] || 0;
                 return (
                   <div key={flavor.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.8rem 1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
@@ -294,11 +295,11 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
               </div>
             </div>
           ))
-        ) : (!product.isCustomAssortment || purchaseMode === 'standard') && product.flavors.length > 0 ? (
+        ) : (!product.isCustomAssortment || purchaseMode === 'standard') && activeFlavors.length > 0 ? (
           <div className={styles.selectionGroup}>
             <label className={styles.selectionLabel}>Select Flavor</label>
             <div className={styles.optionsGrid}>
-              {product.flavors.map((flavor: any) => (
+              {activeFlavors.map((flavor: any) => (
                 <button key={flavor.id} onClick={() => setSelectedFlavor(flavor)} className={`${styles.optionBtn} ${selectedFlavor?.id === flavor.id ? styles.active : ''}`}>
                   {flavor.name}
                   {flavor.priceModifier > 0 && (

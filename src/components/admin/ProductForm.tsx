@@ -17,6 +17,7 @@ interface Flavor {
   id: string;
   name: string;
   priceModifier?: number;
+  isActive?: boolean;
 }
 interface QuantityOption { id?: string; name: string; priceModifier: number; }
 interface Image { id?: string; url: string; altText?: string | null; }
@@ -119,7 +120,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   };
   const removeSize = (idx: number) => setSizes(sizes.filter((_, i) => i !== idx));
 
-  const addFlavor = () => setFlavors([...flavors, { id: Date.now().toString(), name: '', priceModifier: 0 }]);
+  const addFlavor = () => setFlavors([...flavors, { id: Date.now().toString(), name: '', priceModifier: 0, isActive: true }]);
   const updateFlavor = (index: number, field: keyof Flavor, value: any) => {
     const updated = [...flavors];
     updated[index] = { ...updated[index], [field]: value };
@@ -304,6 +305,10 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
                   style={{ flex: 1, padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} />
                 <input type="number" step="0.01" placeholder="Price (£)" value={flavor.priceModifier || ''} onChange={(e) => updateFlavor(index, "priceModifier", parseFloat(e.target.value) || 0)}
                   style={{ width: "100px", padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd" }} title="Leave 0 to use base price" />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input type="checkbox" checked={flavor.isActive !== false} onChange={(e) => updateFlavor(index, "isActive", e.target.checked)} style={{ width: '1rem', height: '1rem', cursor: 'pointer' }} />
+                  Active
+                </label>
                 <button type="button" onClick={() => removeFlavor(index)} style={{ padding: "0.75rem 1rem", background: "#ffebee", border: "none", color: "#d32f2f", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>✕</button>
               </div>
             ))}
