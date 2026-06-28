@@ -59,7 +59,7 @@ export default function ContactPage() {
           <h2 className={styles.formTitle}>Send a Message</h2>
           <p className={styles.formDesc}>We will get back to you as soon as possible.</p>
           
-          <form action="#" method="POST" onSubmit={(e) => e.preventDefault()}>
+          <form action="#" method="POST">
             <div className={styles.formGroup}>
               <label htmlFor="name" className={styles.label}>Full Name</label>
               <input type="text" id="name" name="name" className={styles.input} placeholder="John Doe" required />
