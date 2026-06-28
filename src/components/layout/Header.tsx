@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./Header.module.css";
 
 import GlobalSearch from "./GlobalSearch";
@@ -48,6 +48,7 @@ export default function Header({ navItems = [], categories = [] }: HeaderProps) 
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,12 +58,27 @@ export default function Header({ navItems = [], categories = [] }: HeaderProps) 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleMouseEnter = () => {
+    if (typeof window !== 'undefined' && window.innerWidth > 900) {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      setMegaOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (typeof window !== 'undefined' && window.innerWidth > 900) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setMegaOpen(false);
+      }, 200);
+    }
+  };
+
   const renderNavItem = (item: NavItem) => {
     if (item.label.toLowerCase() === "cakes") {
       return (
         <div key={item.id} className={styles.navItemWrapper}
-          onMouseEnter={() => { if (typeof window !== 'undefined' && window.innerWidth > 900) setMegaOpen(true); }}
-          onMouseLeave={() => { if (typeof window !== 'undefined' && window.innerWidth > 900) setMegaOpen(false); }}>
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}>
           <a 
             href={item.url} 
             className={styles.navLink} 
@@ -80,7 +96,9 @@ export default function Header({ navItems = [], categories = [] }: HeaderProps) 
             </svg>
           </a>
           {megaOpen && categories.length > 0 && (
-            <div className={styles.megaMenuWrapper}>
+            <div className={styles.megaMenuWrapper}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}>
               <div className={styles.megaMenuDropdown}>
                 {categories.map((cat) => (
                   <Link key={cat.id} href={`/shop?category=${cat.slug}`} className={styles.megaItem} onClick={() => setMegaOpen(false)}>
