@@ -430,47 +430,56 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
       <hr style={{ border: "none", borderTop: "1px solid #eee" }} />
 
-      {/* Visibility */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-          <input type="checkbox" name="isFeatured" value="true" defaultChecked={initialData?.isFeatured} style={{ width: "1.1rem", height: "1.1rem" }} />
-          <span style={{ fontSize: "0.9rem" }}>⭐ Feature on homepage</span>
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-          <input type="checkbox" name="isVisible" value="true" defaultChecked={initialData ? initialData.isVisible : true} style={{ width: "1.1rem", height: "1.1rem" }} />
-          <span style={{ fontSize: "0.9rem" }}>👁️ Visible in shop</span>
-        </label>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#f0faf9", padding: "1rem", borderRadius: "8px" }}>
-          <input type="checkbox" name="isPhotoCake" id="isPhotoCake" value="true" defaultChecked={initialData?.isPhotoCake} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--color-primary)" }} />
-          <label htmlFor="isPhotoCake" style={{ fontWeight: "600", color: "var(--color-primary)", cursor: "pointer" }}>📸 Enable Photo Cake Upload Option</label>
+      {/* Product Options */}
+      <fieldset style={{ border: '1px solid #ddd', padding: '1.5rem', borderRadius: '8px', marginTop: "1rem" }}>
+        <legend style={{ fontWeight: 'bold', padding: '0 0.5rem', fontSize: '1.1rem' }}>Product Options & Settings</legend>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", background: "#f8f9fa", padding: "1rem", borderRadius: "8px", border: "1px solid #eee" }}>
+            <input type="checkbox" name="isFeatured" id="isFeatured" value="true" defaultChecked={initialData?.isFeatured} style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }} />
+            <label htmlFor="isFeatured" style={{ cursor: "pointer", fontWeight: "600", color: "#444" }}>⭐ Feature on homepage</label>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", background: "#f8f9fa", padding: "1rem", borderRadius: "8px", border: "1px solid #eee" }}>
+            <input type="checkbox" name="isVisible" id="isVisible" value="true" defaultChecked={initialData ? initialData.isVisible : true} style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }} />
+            <label htmlFor="isVisible" style={{ cursor: "pointer", fontWeight: "600", color: "#444" }}>👁️ Visible in shop</label>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", background: "#f0faf9", padding: "1rem", borderRadius: "8px", border: "1px solid #e0f2f1" }}>
+            <input type="checkbox" name="isPhotoCake" id="isPhotoCake" value="true" defaultChecked={initialData?.isPhotoCake} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--color-primary)", cursor: "pointer" }} />
+            <label htmlFor="isPhotoCake" style={{ fontWeight: "600", color: "var(--color-primary)", cursor: "pointer" }}>📸 Photo Cake Option</label>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", background: "#fff5e6", padding: "1rem", borderRadius: "8px", border: "1px solid #ffe0b2" }}>
+            <input type="checkbox" name="isPickupAvailable" id="isPickupAvailable" value="true" defaultChecked={initialData ? initialData.isPickupAvailable : true} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--color-secondary)", cursor: "pointer" }} />
+            <label htmlFor="isPickupAvailable" style={{ fontWeight: "600", color: "var(--color-secondary)", cursor: "pointer" }}>🏬 Store Pickup</label>
+          </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px" }}>
-            <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f" }} />
+        <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem", background: "#fcf4f4", padding: "1rem", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+            <input type="checkbox" name="isCustomAssortment" id="isCustomAssortment" checked={isCustomAssortment} onChange={(e) => setIsCustomAssortment(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", accentColor: "#d32f2f", cursor: "pointer" }} />
             <label htmlFor="isCustomAssortment" style={{ fontWeight: "600", color: "#d32f2f", cursor: "pointer" }}>🧁 Enable Custom Flavor Assortment (Build a Box)</label>
           </div>
 
           {isCustomAssortment && (
-            <div style={{ marginTop: "0.5rem", padding: "1rem", background: "#fdf8fb", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
+            <div style={{ marginTop: "0.5rem", padding: "1rem", background: "#fff", borderRadius: "8px", border: "1px solid #f8e5f0" }}>
               <label style={{ fontWeight: "600", fontSize: "0.9rem", color: "#d81b60" }}>Per Piece Price (£)</label>
               <input
                 type="number"
                 step="0.01"
                 value={customPiecePrice}
                 onChange={(e) => setCustomPiecePrice(parseFloat(e.target.value) || 0)}
-                style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid #ddd", marginTop: "0.5rem" }}
+                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ddd", marginTop: "0.5rem" }}
                 placeholder="e.g. 2.50"
               />
+              <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.5rem", marginBottom: 0 }}>
+                This price will multiply by the number of custom items selected by the user. Base price will be ignored.
+              </p>
             </div>
           )}
         </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#fff5e6", padding: "1rem", borderRadius: "8px" }}>
-          <input type="checkbox" name="isPickupAvailable" id="isPickupAvailable" value="true" defaultChecked={initialData ? initialData.isPickupAvailable : true} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--color-secondary)" }} />
-          <label htmlFor="isPickupAvailable" style={{ fontWeight: "600", color: "var(--color-secondary)", cursor: "pointer" }}>🏬 Pickup Available</label>
-        </div>
-      </div>
+      </fieldset>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", paddingTop: "1rem" }}>
         <Link href="/dashboard/products" style={{ padding: "0.7rem 1.5rem", border: "1px solid #ddd", borderRadius: "8px", color: "#555", textDecoration: "none", fontSize: "0.9rem" }}>Cancel</Link>
