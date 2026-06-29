@@ -471,3 +471,17 @@ export async function resetAnalytics() {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/settings");
 }
+
+export async function toggleCategoryVisibility(id: string, isVisible: boolean) {
+  const session = await auth();
+  if (session?.user?.role === "EMPLOYEE") throw new Error("Unauthorized");
+
+  await prisma.category.update({
+    where: { id },
+    data: { isVisible }
+  });
+
+  revalidatePath("/dashboard/categories");
+  revalidatePath("/shop");
+  revalidatePath("/");
+}

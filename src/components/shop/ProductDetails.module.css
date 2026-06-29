@@ -328,3 +328,75 @@
   box-shadow: 0 15px 25px rgba(0, 145, 147, 0.3);
   background: var(--color-primary-dark);
 }
+
+/* Custom Cart Popup */
+.cartPopup {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: white;
+  border-left: 5px solid var(--color-primary);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  z-index: 10000;
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cartPopupContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.checkIcon {
+  background: var(--color-primary);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.cartPopupClose {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.cartPopupClose:hover {
+  color: #d32f2f;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .cartPopup {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+}

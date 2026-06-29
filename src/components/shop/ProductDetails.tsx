@@ -44,6 +44,7 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
   const [showPickupModal, setShowPickupModal] = useState(false);
   const [customFlavorQuantities, setCustomFlavorQuantities] = useState<Record<string, number>>({});
   const [purchaseMode, setPurchaseMode] = useState<'standard' | 'custom'>('standard');
+  const [showCartPopup, setShowCartPopup] = useState(false);
 
   const isPhotoCake = product.isPhotoCake === true;
 
@@ -77,6 +78,8 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         }
       });
       finalPrice = customTotalPrice;
+    } else {
+      finalPrice = product.customPiecePrice || product.price;
     }
   }
 
@@ -141,7 +144,8 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
       });
     }
 
-    alert("Added to cart successfully!");
+    setShowCartPopup(true);
+    setTimeout(() => setShowCartPopup(false), 3000);
   };
 
   return (
@@ -363,6 +367,18 @@ export default function ProductDetails({ product, pickupLocation }: ProductDetai
         </div>
       </div>
 
+      {showCartPopup && (
+        <div className={styles.cartPopup}>
+          <div className={styles.cartPopupContent}>
+            <span className={styles.checkIcon}>✓</span>
+            <div>
+              <h4 style={{ margin: 0, fontSize: "1.05rem", color: "#333", fontFamily: "var(--font-heading)" }}>Added to Cart!</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "#666", marginTop: "2px" }}>Your item has been successfully added.</p>
+            </div>
+          </div>
+          <button onClick={() => setShowCartPopup(false)} className={styles.cartPopupClose}>✕</button>
+        </div>
+      )}
     </div>
   );
 }

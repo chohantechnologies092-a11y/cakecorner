@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import styles from "../../../page.module.css";
 import ImageUploadInput from "@/components/admin/ImageUploadInput";
 import CategoryProductSelector from "@/components/admin/CategoryProductSelector";
+import SubmitButton from "@/components/admin/SubmitButton";
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -73,9 +74,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
             <Link href="/dashboard/categories" style={{ padding: "0.7rem 1.5rem", border: "1px solid #ddd", borderRadius: "var(--border-radius-sm)", color: "#555", textDecoration: "none", fontSize: "0.9rem" }}>
               Cancel
             </Link>
-            <button type="submit" style={{ padding: "0.7rem 1.8rem", background: "var(--color-primary)", color: "white", border: "none", borderRadius: "var(--border-radius-sm)", fontWeight: "600", cursor: "pointer", fontSize: "0.9rem" }}>
-              Save Changes
-            </button>
+            <SubmitButton text="Save Changes" />
           </div>
         </form>
       </div>

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { deleteCategory } from "@/lib/actions";
+import { deleteCategory, toggleCategoryVisibility } from "@/lib/actions";
 import Link from "next/link";
 import styles from "../page.module.css";
 import DashboardSearch from "@/components/admin/DashboardSearch";
@@ -96,9 +96,22 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
                     </span>
                   </td>
                   <td style={{ padding: "1rem 1.5rem" }}>
-                    <span style={{ background: cat.isVisible ? "#e6f7f5" : "#f5f5f5", color: cat.isVisible ? "var(--color-primary)" : "#888", padding: "0.2rem 0.7rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "600" }}>
-                      {cat.isVisible ? "Visible" : "Hidden"}
-                    </span>
+                    <form action={toggleCategoryVisibility.bind(null, cat.id, !cat.isVisible)}>
+                      <button type="submit" style={{ 
+                        background: cat.isVisible ? "#e6f7f5" : "#fff0f0", 
+                        color: cat.isVisible ? "var(--color-primary)" : "#d32f2f", 
+                        padding: "0.35rem 0.8rem", 
+                        borderRadius: "12px", 
+                        fontSize: "0.8rem", 
+                        fontWeight: "700",
+                        border: "1px solid " + (cat.isVisible ? "#b2dfdb" : "#ffcdd2"),
+                        cursor: "pointer",
+                      }}
+                      title={cat.isVisible ? "Click to make inactive" : "Click to make active"}
+                      >
+                        {cat.isVisible ? "● Active" : "○ Inactive"}
+                      </button>
+                    </form>
                   </td>
                   <td style={{ padding: "1rem 1.5rem" }}>
                     {cat.isFeaturedOnHome ? (

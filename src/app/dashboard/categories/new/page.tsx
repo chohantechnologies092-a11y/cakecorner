@@ -5,6 +5,7 @@ import ImageUploadInput from "@/components/admin/ImageUploadInput";
 
 import { prisma } from "@/lib/db";
 import CategoryProductSelector from "@/components/admin/CategoryProductSelector";
+import SubmitButton from "@/components/admin/SubmitButton";
 
 export default async function NewCategoryPage() {
   const products = await prisma.product.findMany({
@@ -63,9 +64,7 @@ export default async function NewCategoryPage() {
             <Link href="/dashboard/categories" style={{ padding: "0.7rem 1.5rem", border: "1px solid #ddd", borderRadius: "var(--border-radius-sm)", color: "#555", textDecoration: "none", fontSize: "0.9rem" }}>
               Cancel
             </Link>
-            <button type="submit" style={{ padding: "0.7rem 1.8rem", background: "var(--color-primary)", color: "white", border: "none", borderRadius: "var(--border-radius-sm)", fontWeight: "600", cursor: "pointer", fontSize: "0.9rem" }}>
-              Create Category
-            </button>
+            <SubmitButton text="Create Category" />
           </div>
         </form>
       </div>
