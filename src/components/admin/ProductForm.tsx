@@ -188,8 +188,10 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
           <p style={{ color: "#666", fontSize: "0.9rem", marginTop: "0.5rem" }}>Please wait...</p>
         </div>
       )}
-    <form action={async (formData) => {
+    <form onSubmit={async (e) => {
+      e.preventDefault();
       setLoading(true);
+      const formData = new FormData(e.currentTarget);
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("flavors", JSON.stringify(flavors));
       formData.append("tiers", JSON.stringify(tiers));
