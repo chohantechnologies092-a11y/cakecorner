@@ -109,13 +109,13 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
               <div className={styles.grid}>
                 {products.map((product) => (
                   <div key={product.id} className={styles.productCard}>
-                    <div className={styles.imageWrapper}>
+                    <Link href={`/product/${product.id}`} className={styles.imageWrapper} style={{ display: "block" }}>
                       {product.imageUrl ? (
                         <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.image} style={{ objectFit: "cover" }} />
                       ) : (
                         <div className={styles.placeholder}>🎂</div>
                       )}
-                    </div>
+                    </Link>
                     <div className={styles.info}>
                       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.5rem" }}>
                         {product.categories.map((cat: any) => (

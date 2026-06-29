@@ -51,6 +51,8 @@ model Product {
   metaTitle       String?
   metaDescription String?
   canonicalUrl    String?
+  hashtags        String?
+  imageAltText    String?
 
   sizes           ProductSize[]
   flavors         ProductFlavor[]

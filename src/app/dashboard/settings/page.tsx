@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { updateStoreSettings } from "@/lib/actions";
+import ResetAnalyticsButton from "@/components/admin/ResetAnalyticsButton";
 
 export default async function SettingsPage() {
   const storeSetting = await prisma.storeSetting.findUnique({ where: { id: "global" } });
@@ -28,6 +29,17 @@ export default async function SettingsPage() {
             Save Settings
           </button>
         </form>
+      </div>
+
+      <div style={{ background: "white", padding: "2rem", borderRadius: "16px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", maxWidth: "600px", marginTop: "2rem" }}>
+        <h2 style={{ fontSize: "1.2rem", marginBottom: "1.5rem", color: "#d32f2f" }}>Danger Zone</h2>
+        
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "flex-start" }}>
+          <p style={{ fontSize: "0.9rem", color: "#666", margin: 0 }}>
+            Resetting analytics will permanently delete all page views, visitor counts, and location data. This action cannot be undone.
+          </p>
+          <ResetAnalyticsButton />
+        </div>
       </div>
     </div>
   );

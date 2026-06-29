@@ -128,6 +128,8 @@ export async function createProduct(formData: FormData) {
   const imagesStr = formData.get("images") as string;
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
+  const hashtags = formData.get("hashtags") as string;
+  const imageAltText = formData.get("imageAltText") as string;
 
   const categoryIds = categoryIdsStr ? JSON.parse(categoryIdsStr) : [];
 
@@ -164,6 +166,8 @@ export async function createProduct(formData: FormData) {
       baseSize: formData.get("baseSize") as string || null,
       metaTitle,
       metaDescription,
+      hashtags,
+      imageAltText,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name, priceModifier: f.priceModifier || 0, isActive: f.isActive !== false })) },
       tiers: { 
@@ -199,6 +203,8 @@ export async function updateProduct(id: string, formData: FormData) {
   const imagesStr = formData.get("images") as string;
   const metaTitle = formData.get("metaTitle") as string;
   const metaDescription = formData.get("metaDescription") as string;
+  const hashtags = formData.get("hashtags") as string;
+  const imageAltText = formData.get("imageAltText") as string;
 
   const categoryIds = categoryIdsStr ? JSON.parse(categoryIdsStr) : [];
 
@@ -244,6 +250,8 @@ export async function updateProduct(id: string, formData: FormData) {
       baseSize: formData.get("baseSize") as string || null,
       metaTitle,
       metaDescription,
+      hashtags,
+      imageAltText,
       sizes: { create: sizes.map((s: any) => ({ name: s.name, priceModifier: s.priceModifier })) },
       flavors: { create: flavors.map((f: any) => ({ name: f.name, priceModifier: f.priceModifier || 0, isActive: f.isActive !== false })) },
       tiers: { 
@@ -449,5 +457,17 @@ export async function updateStoreSettings(formData: FormData) {
   
   revalidatePath("/");
   revalidatePath("/product/[id]", "page");
+  revalidatePath("/dashboard/settings");
+}
+
+export async function resetAnalytics() {
+  const session = await auth();
+  if (session?.user?.role === "EMPLOYEE") throw new Error("Unauthorized");
+
+  await prisma.dailyAnalytics.deleteMany({});
+  await prisma.pageAnalytics.deleteMany({});
+  await prisma.locationAnalytics.deleteMany({});
+  
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/settings");
 }

@@ -145,11 +145,6 @@
   padding-top: 1.5rem;
   opacity: 0;
   animation: slideUp 0.3s forwards;
-  pointer-events: none;
-}
-
-.navItemWrapper:hover .megaMenuWrapper {
-  pointer-events: auto;
 }
 
 @keyframes slideUp {

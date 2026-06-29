@@ -43,6 +43,8 @@ interface ProductFormProps {
     metaTitle?: string | null;
     metaDescription?: string | null;
     canonicalUrl?: string | null;
+    hashtags?: string | null;
+    imageAltText?: string | null;
     sizes: Size[];
     flavors: Flavor[];
     tiers?: Tier[];
@@ -248,6 +250,13 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             onChange={setFeaturedImage}
             placeholder="https://..."
           />
+          <input
+            name="imageAltText"
+            type="text"
+            placeholder="Alt text for screen readers and SEO"
+            defaultValue={initialData?.imageAltText || ""}
+            style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.9rem", marginTop: "0.5rem" }}
+          />
         </div>
       </div>
 
@@ -429,6 +438,17 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             rows={3}
             defaultValue={initialData?.metaDescription || ""}
             style={{ padding: '0.8rem', border: '1px solid #ddd', borderRadius: '8px', resize: 'vertical' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+          <label style={{ fontWeight: "600", fontSize: "0.9rem" }}>Hashtags</label>
+          <input
+            name="hashtags"
+            type="text"
+            placeholder="e.g. #chocolate, #weddingcake"
+            defaultValue={initialData?.hashtags || ""}
+            style={{ padding: '0.8rem', border: '1px solid #ddd', borderRadius: '8px' }}
           />
         </div>
       </fieldset>
