@@ -4,6 +4,7 @@ import Link from "next/link";
 import styles from "../page.module.css";
 import DashboardSearch from "@/components/admin/DashboardSearch";
 import DashboardSortFilter from "@/components/admin/DashboardSortFilter";
+import SortableCategoryList from "@/components/admin/SortableCategoryList";
 
 export default async function CategoriesPage({ searchParams }: { searchParams: Promise<{ q?: string, sort?: string }> }) {
   const { q, sort } = await searchParams;
@@ -64,82 +65,10 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
           </Link>
         </div>
       ) : (
-        <div className="table-responsive" style={{ background: "white", borderRadius: "var(--border-radius-sm)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", minWidth: "700px" }}>
-            <thead>
-              <tr style={{ background: "#f9f9f9", borderBottom: "2px solid #eee" }}>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#888" }}>Category</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#888" }}>Slug</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#888" }}>Products</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Status</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888" }}>Home Featured</th>
-                <th style={{ padding: "1rem 1.5rem", fontSize: "0.8rem", textTransform: "uppercase", color: "#888", textAlign: "right" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((cat) => (
-                <tr key={cat.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      {cat.imageUrl ? (
-                        <img src={cat.imageUrl} alt={cat.name} style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "8px" }} />
-                      ) : (
-                        <div style={{ width: "40px", height: "40px", background: "#f0faf9", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>🎂</div>
-                      )}
-                      <span style={{ fontWeight: "600" }}>{cat.name}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: "1rem 1.5rem", color: "#888", fontSize: "0.9rem" }}>/{cat.slug}</td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <span style={{ background: "#f0faf9", color: "var(--color-primary)", padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "600" }}>
-                      {cat._count.products} products
-                    </span>
-                  </td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    <form action={toggleCategoryVisibility.bind(null, cat.id, !cat.isVisible)}>
-                      <button type="submit" style={{ 
-                        background: cat.isVisible ? "#e6f7f5" : "#fff0f0", 
-                        color: cat.isVisible ? "var(--color-primary)" : "#d32f2f", 
-                        padding: "0.35rem 0.8rem", 
-                        borderRadius: "12px", 
-                        fontSize: "0.8rem", 
-                        fontWeight: "700",
-                        border: "1px solid " + (cat.isVisible ? "#b2dfdb" : "#ffcdd2"),
-                        cursor: "pointer",
-                      }}
-                      title={cat.isVisible ? "Click to make inactive" : "Click to make active"}
-                      >
-                        {cat.isVisible ? "● Active" : "○ Inactive"}
-                      </button>
-                    </form>
-                  </td>
-                  <td style={{ padding: "1rem 1.5rem" }}>
-                    {cat.isFeaturedOnHome ? (
-                      <span style={{ fontSize: "1.2rem" }}>⭐</span>
-                    ) : (
-                      <span style={{ color: "#ccc" }}>—</span>
-                    )}
-                  </td>
-                  <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
-                    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                      <Link href={`/shop?category=${cat.slug}`} target="_blank" style={{ padding: "0.35rem 0.9rem", background: "var(--color-background-glass, #f0fdfa)", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "var(--color-primary, #0f766e)" }}>
-                        View
-                      </Link>
-                      <Link href={`/dashboard/categories/${cat.id}/edit`} style={{ padding: "0.35rem 0.9rem", background: "#f0f0f0", borderRadius: "6px", fontSize: "0.85rem", textDecoration: "none", color: "#333" }}>
-                        Edit
-                      </Link>
-                      <form action={deleteCategory.bind(null, cat.id)}>
-                        <button type="submit" style={{ padding: "0.35rem 0.9rem", background: "#fff0f0", color: "#d32f2f", borderRadius: "6px", fontSize: "0.85rem", cursor: "pointer" }}>
-                          Delete
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SortableCategoryList 
+          initialCategories={categories as any} 
+          isSortable={!sort || sort === ""} 
+        />
       )}
     </div>
   );

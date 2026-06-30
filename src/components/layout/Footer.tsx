@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.grid}>
-          
+
           <div className={styles.brand}>
             <h2 className={styles.logoTitle}>Cake Corner</h2>
             <p className={styles.brandDesc}>
@@ -33,7 +33,7 @@ export default function Footer() {
               <li><Link href="/shop" className={styles.link}>Our Menu</Link></li>
               <li><Link href="/shop?category=cakes" className={styles.link}>Custom Cakes</Link></li>
               <li><Link href="#" className={styles.link}>Special Offers</Link></li>
-              <li><Link href="#" className={styles.link}>Gift Cards</Link></li>
+
             </ul>
           </div>
 
@@ -42,8 +42,9 @@ export default function Footer() {
             <ul className={styles.links}>
               <li><Link href="/about" className={styles.link}>About Us</Link></li>
               <li><Link href="/contact" className={styles.link}>Contact</Link></li>
+              <li><Link href="/blog" className={styles.link}>Blog</Link></li>
               <li><Link href="#" className={styles.link}>Careers</Link></li>
-              <li><Link href="#" className={styles.link}>Store Locator</Link></li>
+
             </ul>
           </div>
 

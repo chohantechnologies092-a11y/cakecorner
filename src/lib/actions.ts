@@ -85,6 +85,31 @@ export async function deleteCategory(id: string) {
   revalidatePath("/");
 }
 
+export async function updateCategoriesOrder(orderedIds: string[]) {
+  const session = await auth();
+  if (session?.user?.role === "EMPLOYEE") throw new Error("Unauthorized");
+
+  try {
+    // Update categories sequentially or with a transaction
+    // Using a transaction ensures all or nothing
+    await prisma.$transaction(
+      orderedIds.map((id, index) =>
+        prisma.category.update({
+          where: { id },
+          data: { sortOrder: index },
+        })
+      )
+    );
+
+    revalidatePath("/dashboard/categories");
+    revalidatePath("/shop");
+    revalidatePath("/");
+  } catch (error: any) {
+    console.error("Failed to update category order:", error);
+    throw new Error("Failed to update category order");
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Products
 // ─────────────────────────────────────────────────────────────────────────────
